@@ -9,6 +9,9 @@ public class AppModel implements Serializable {
     private String id;
     private String name;
     private String packageName;
+    private String icon;
+    private String description;
+
 
     public String getName() {
         return name;
@@ -32,5 +35,21 @@ public class AppModel implements Serializable {
 
     public void setPackageName(String packageName) {
         this.packageName = packageName;
+    }
+
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

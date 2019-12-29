@@ -1,14 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
+    android:gravity="center"
     android:orientation="vertical"
     tools:context=".MainActivityNew">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvHorizontal"
+    <ImageView
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_gravity="center"
+        android:src="@drawable/guru_2" />
+
+    <TextView
+        android:layout_width="280dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="30dp"
+        android:gravity="center"
+        android:lineHeight="40dp"
+        android:lineSpacingExtra="6dp"
+        android:lineSpacingMultiplier="1.5"
+        android:text=" Smartphone Guru se apna phone
+chalana seekhe"
+        android:textColor="@color/textGrayLight"
+        android:textSize="25sp" />
+
+    <EditText
         android:layout_width="match_parent"
-        android:layout_height="200dp" />
+        android:layout_height="wrap_content"
+        android:layout_margin="30dp"
+        android:height="40dp"
+        android:background="@drawable/edittext_round_corner"
+        android:padding="10dp" />
+
+    <Button
+        android:id="@+id/nextBtn"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_margin="30dp"
+        android:background="@drawable/btn_green_round_corner"
+        android:text="ANDAR CHALE"
+        android:textColor="@color/white"
+        android:textSize="21sp" />
 </LinearLayout>

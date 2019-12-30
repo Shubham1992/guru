@@ -4,4 +4,5 @@ import java.util.ArrayList;
 
 public class AppHelper {
     public static ArrayList<Object> featuredList = new ArrayList<>();
+    public static ArrayList<Object> userAppList = new ArrayList<>();
 }

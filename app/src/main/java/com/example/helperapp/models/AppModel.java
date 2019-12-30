@@ -1,7 +1,5 @@
 package com.example.helperapp.models;
 
-import android.graphics.drawable.Drawable;
-
 import java.io.Serializable;
 
 public class AppModel implements Serializable {
@@ -12,6 +10,16 @@ public class AppModel implements Serializable {
     private String icon;
     private String description;
 
+    public AppModel(String name, String packageName, String icon, String description) {
+        this.name = name;
+        this.packageName = packageName;
+        this.icon = icon;
+        this.description = description;
+    }
+
+    public AppModel() {
+
+    }
 
     public String getName() {
         return name;

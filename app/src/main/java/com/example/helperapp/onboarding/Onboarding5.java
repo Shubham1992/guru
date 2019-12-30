@@ -21,7 +21,7 @@ public class Onboarding5 extends AppCompatActivity {
         nextBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(Onboarding5.this, Onboarding5.class);
+                Intent intent = new Intent(Onboarding5.this, Onboarding6.class);
                 startActivity(intent);
             }
         });

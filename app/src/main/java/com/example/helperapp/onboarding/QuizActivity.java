@@ -1,7 +1,10 @@
 package com.example.helperapp.onboarding;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.animation.AccelerateInterpolator;
 import android.widget.Button;
 
@@ -26,6 +29,15 @@ public class QuizActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quiz);
+        Window window = getWindow();
+
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            window.setStatusBarColor(getResources().getColor(R.color.colorPrimary));
+        }
 
         final CardStackView cardStackView = findViewById(R.id.card_stack_view);
         final CardStackLayoutManager cardStackLayoutManager = new CardStackLayoutManager(QuizActivity.this);
@@ -39,7 +51,7 @@ public class QuizActivity extends AppCompatActivity {
             AppModel appModel = new AppModel();
             appModel.setName((String) ((HashMap) featuredList.get(i)).get("name"));
             appModel.setDescription((String) ((HashMap) featuredList.get(i)).get("description"));
-            appModel.setIcon((String) ((HashMap) featuredList.get(i)).get("icon"));
+            appModel.setIcon((String) ((HashMap) featuredList.get(i)).get("image"));
             featuredListAppModels.add(appModel);
         }
         QuizCardAdapter quizCardAdapter = new QuizCardAdapter(featuredListAppModels, QuizActivity.this);

@@ -22,12 +22,13 @@ public class QuizCardAdapter extends RecyclerView.Adapter<QuizCardAdapter.MyView
     public Context mContext;
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        public TextView name;
+        public TextView name, item_description;
         public ImageView imageView;
 
         public MyViewHolder(View view) {
             super(view);
             name = view.findViewById(R.id.item_name);
+            item_description = view.findViewById(R.id.item_description);
             imageView = view.findViewById(R.id.item_image);
         }
     }
@@ -49,6 +50,7 @@ public class QuizCardAdapter extends RecyclerView.Adapter<QuizCardAdapter.MyView
     public void onBindViewHolder(MyViewHolder holder, int position) {
         final AppModel appModel = appModels.get(position);
         holder.name.setText(appModel.getName());
+        holder.item_description.setText(appModel.getDescription());
         Glide.with(mContext).load(appModel.getIcon()).into(holder.imageView);
     }
 

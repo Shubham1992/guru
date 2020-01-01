@@ -28,13 +28,35 @@ chalana seekhe"
         android:textColor="@color/textGrayLight"
         android:textSize="25sp" />
 
-    <EditText
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="30dp"
-        android:height="40dp"
-        android:background="@drawable/edittext_round_corner"
-        android:padding="10dp" />
+        android:layout_margin="30dp">
+
+
+        <EditText
+            android:id="@+id/phoneNumber"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:height="40dp"
+            android:background="@drawable/edittext_round_corner"
+            android:gravity="center"
+            android:hint="Phone number dalein"
+            android:inputType="phone"
+            android:padding="10dp" />
+
+        <TextView
+            android:layout_width="70dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center|left"
+            android:background="@drawable/btn_gray_round_corner"
+            android:gravity="center"
+            android:text="+91"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:textStyle="bold"></TextView>
+    </FrameLayout>
+
 
     <Button
         android:id="@+id/nextBtn"

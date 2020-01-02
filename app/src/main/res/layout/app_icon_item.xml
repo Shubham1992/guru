@@ -22,6 +22,7 @@
         android:gravity="center"
         android:lines="1"
         android:padding="5dp"
-        android:text="placeholder" />
+        android:text="placeholder"
+        android:textColor="@color/textGrayLight" />
 
 </LinearLayout>

@@ -11,6 +11,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.helperapp.onboarding.Onboarding1;
 import com.example.helperapp.utils.AppHelper;
 import com.google.firebase.database.DataSnapshot;
@@ -23,10 +26,6 @@ import com.google.firebase.database.ValueEventListener;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 
 public class MainActivityNew extends AppCompatActivity {
 
@@ -99,12 +98,17 @@ public class MainActivityNew extends AppCompatActivity {
                 }
 
                 DatabaseReference myRefUserAppList = database.getReference(phoneNumber.getText().toString());
+
                 myRefUserAppList.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         GenericTypeIndicator<ArrayList<Object>> genericTypeIndicator = new GenericTypeIndicator<ArrayList<Object>>() {
                         };
                         ArrayList<Object> value = dataSnapshot.getValue(genericTypeIndicator);
+                        if (value == null) {
+                            Toast.makeText(MainActivityNew.this, "Sahi phone number dalein", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
                         Log.d("tag", "Value is: " + value);
                         AppHelper.userAppList = value;
 

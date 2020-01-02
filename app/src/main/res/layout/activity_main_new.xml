@@ -9,8 +9,8 @@
     tools:context=".MainActivityNew">
 
     <ImageView
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
         android:layout_gravity="center"
         android:src="@drawable/guru_2" />
 
@@ -37,8 +37,7 @@ chalana seekhe"
         <EditText
             android:id="@+id/phoneNumber"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:height="40dp"
+            android:layout_height="45dp"
             android:background="@drawable/edittext_round_corner"
             android:gravity="center"
             android:hint="Phone number dalein"
@@ -47,7 +46,7 @@ chalana seekhe"
 
         <TextView
             android:layout_width="70dp"
-            android:layout_height="40dp"
+            android:layout_height="45dp"
             android:layout_gravity="center|left"
             android:background="@drawable/btn_gray_round_corner"
             android:gravity="center"
@@ -61,7 +60,7 @@ chalana seekhe"
     <Button
         android:id="@+id/nextBtn"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="45dp"
         android:layout_margin="30dp"
         android:background="@drawable/btn_green_round_corner"
         android:text="ANDAR CHALE"

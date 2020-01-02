@@ -6,7 +6,11 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AccelerateInterpolator;
-import android.widget.Button;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.helperapp.R;
 import com.example.helperapp.adapters.QuizCardAdapter;
@@ -21,9 +25,10 @@ import com.yuyakaido.android.cardstackview.SwipeAnimationSetting;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 public class QuizActivity extends AppCompatActivity {
+
+    private ProgressBar progress;
+    private int countProgress = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +47,10 @@ public class QuizActivity extends AppCompatActivity {
         final CardStackView cardStackView = findViewById(R.id.card_stack_view);
         final CardStackLayoutManager cardStackLayoutManager = new CardStackLayoutManager(QuizActivity.this);
         cardStackView.setLayoutManager(cardStackLayoutManager);
+        cardStackLayoutManager.setCanScrollHorizontal(false);
+        cardStackLayoutManager.setCanScrollVertical(false);
 
+        progress = findViewById(R.id.progress);
 
 
         ArrayList<Object> featuredList = AppHelper.userAppList;
@@ -54,13 +62,20 @@ public class QuizActivity extends AppCompatActivity {
             appModel.setIcon((String) ((HashMap) featuredList.get(i)).get("image"));
             featuredListAppModels.add(appModel);
         }
+
+        progress.setMax(featuredList.size());
+        progress.setScaleY(5f);
+
         QuizCardAdapter quizCardAdapter = new QuizCardAdapter(featuredListAppModels, QuizActivity.this);
         cardStackView.setAdapter(quizCardAdapter);
 
-        Button like_button = findViewById(R.id.like_button);
+        final ImageView like_button = findViewById(R.id.like_button);
         like_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                like_button.startAnimation(AnimationUtils.loadAnimation(QuizActivity.this, R.anim.zoomout));
+
                 SwipeAnimationSetting setting = new SwipeAnimationSetting.Builder()
                         .setDirection(Direction.Right)
                         .setDuration(Duration.Normal.duration)
@@ -68,13 +83,20 @@ public class QuizActivity extends AppCompatActivity {
                         .build();
                 cardStackLayoutManager.setSwipeAnimationSetting(setting);
                 cardStackView.swipe();
+
+                progress.setProgress(progress.getProgress() + 1);
+
+
             }
         });
 
-        Button dislike_button = findViewById(R.id.skip_button);
+        final ImageView dislike_button = findViewById(R.id.skip_button);
         dislike_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                dislike_button.startAnimation(AnimationUtils.loadAnimation(QuizActivity.this, R.anim.zoomout));
+
                 SwipeAnimationSetting setting = new SwipeAnimationSetting.Builder()
                         .setDirection(Direction.Left)
                         .setDuration(Duration.Normal.duration)
@@ -82,8 +104,12 @@ public class QuizActivity extends AppCompatActivity {
                         .build();
                 cardStackLayoutManager.setSwipeAnimationSetting(setting);
                 cardStackView.swipe();
+
+                progress.setProgress(progress.getProgress() + 1);
+
             }
         });
+
 
     }
 }

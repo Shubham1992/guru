@@ -24,18 +24,21 @@
 
         <TextView
             android:layout_width="240dp"
-            android:layout_height="220dp"
+            android:layout_height="260dp"
             android:layout_gravity="center"
             android:layout_marginLeft="30dp"
             android:background="@drawable/combined_shape"
             android:gravity="center"
+            android:lineHeight="40dp"
+            android:lineSpacingExtra="10dp"
             android:paddingLeft="15dp"
             android:paddingTop="20dp"
             android:paddingRight="30dp"
             android:paddingBottom="20dp"
             android:text="Apne interest bataye,
 Smartphone ko superpower banaye."
-            android:textSize="21dp" />
+            android:textColor="#454545"
+            android:textSize="24dp" />
 
         <ImageView
             android:layout_width="100dp"

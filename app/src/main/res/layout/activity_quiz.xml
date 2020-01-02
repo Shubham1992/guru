@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     android:orientation="vertical"
     tools:context=".onboarding.QuizActivity">
+
 
     <ProgressBar
         android:id="@+id/progress"
@@ -14,64 +15,47 @@
         android:layout_height="20dp"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:layout_margin="20dp"
-        android:max="100"
-        android:progress="45" />
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="45dp"
+        android:layout_marginRight="20dp" />
 
-    <RelativeLayout
+
+    <com.yuyakaido.android.cardstackview.CardStackView
+        android:id="@+id/card_stack_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:clipChildren="false">
+        android:layout_above="@+id/button_container"
+        android:layout_weight="1"
+        android:clipToPadding="false"
 
-        <RelativeLayout
-            android:id="@+id/button_container"
-            android:layout_width="match_parent"
+        android:padding="4dp" />
+
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/skip_button"
+            android:layout_width="80dp"
             android:layout_height="80dp"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="8dp"
-            android:clipChildren="false"
-            android:orientation="horizontal">
+            android:layout_marginLeft="60dp"
+            android:layout_marginTop="65dp"
+            android:layout_marginBottom="50dp"
+            android:layout_weight="1"
+            android:src="@drawable/dislike_small" />
 
-            <Button
-                android:id="@+id/skip_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_toStartOf="@+id/rewind_button"
-                android:layout_toLeftOf="@+id/rewind_button"
-                android:src="@drawable/skip_red_24dp" />
 
-            <Button
-                android:id="@+id/rewind_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:layout_marginStart="32dp"
-                android:layout_marginLeft="32dp"
-                android:layout_marginEnd="32dp"
-                android:layout_marginRight="32dp"
-                android:src="@drawable/rewind_blue_24dp"
-                app:backgroundTint="@android:color/white" />
-
-            <Button
-                android:id="@+id/like_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_toEndOf="@+id/rewind_button"
-                android:layout_toRightOf="@+id/rewind_button"
-                android:src="@drawable/like_green_24dp" />
-
-        </RelativeLayout>
-
-        <com.yuyakaido.android.cardstackview.CardStackView
-            android:id="@+id/card_stack_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_above="@+id/button_container"
-            android:clipToPadding="false"
-            android:padding="4dp"></com.yuyakaido.android.cardstackview.CardStackView>
-
-    </RelativeLayout>
+        <ImageView
+            android:id="@+id/like_button"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_gravity="right"
+            android:layout_marginTop="40dp"
+            android:layout_marginRight="60dp"
+            android:layout_marginBottom="50dp"
+            android:layout_weight="1"
+            android:src="@drawable/like_small" />
+    </FrameLayout>
 
 </LinearLayout>

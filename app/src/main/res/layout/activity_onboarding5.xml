@@ -16,7 +16,7 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_gravity="bottom"
-            android:layout_marginBottom="19dp"
+            android:layout_marginBottom="10dp"
             android:background="@color/lineColor" />
 
         <LinearLayout
@@ -68,9 +68,9 @@
             android:gravity="center_horizontal"
             android:letterSpacing="0.09"
             android:lineSpacingExtra="-10sp"
-            android:textColor="#454545"
-            android:textSize="28sp"
-            android:text="Not for me!" />
+            android:text="Not for me!"
+            android:textColor="@color/textGrayLight"
+            android:textSize="28sp" />
 
         <Button
             android:id="@+id/nextBtn"

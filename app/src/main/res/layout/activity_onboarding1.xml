@@ -21,8 +21,8 @@
         android:text="Aapka phone bus time pass ke like nahi hai.
 Aap ispar kar sakte hai dher saari useful cheeze.
 Ghabrayen Nahi, Ye sab aapko sikhayega,
-Smartphone Guru.
-"
+Smartphone Guru."
+        android:textColor="@color/textGrayLight"
         android:textSize="21sp" />
 
     <ImageView

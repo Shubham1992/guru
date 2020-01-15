@@ -1,5 +1,7 @@
 package com.example.helperapp;
 
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -7,8 +9,9 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -16,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.helperapp.onboarding.Onboarding1;
 import com.example.helperapp.utils.AppHelper;
+import com.example.helperapp.utils.SharedPrefUtil;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -26,11 +30,12 @@ import com.google.firebase.database.ValueEventListener;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class MainActivityNew extends AppCompatActivity {
 
     JSONObject jsonObject = new JSONObject();
-    private Button nextBtn;
+    private ImageView nextBtn;
     private EditText phoneNumber;
 
     @Override
@@ -88,9 +93,64 @@ public class MainActivityNew extends AppCompatActivity {
         });
 
 
+        DatabaseReference myRefAppStrings = database.getReference("strings");
+
+
+        myRefAppStrings.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                GenericTypeIndicator<HashMap<String, Object>> genericTypeIndicator = new GenericTypeIndicator<HashMap<String, Object>>() {
+                };
+                HashMap<String, Object> value = dataSnapshot.getValue(genericTypeIndicator);
+                Log.d("tag", "Value is: " + value);
+                AppHelper.stringList = value;
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+        //final ProgressDialog dialog = ProgressDialog.show(MainActivityNew.this, "", "Loading. Please wait...", true);
+
+        if (!SharedPrefUtil.getPref(MainActivityNew.this, "phone").equalsIgnoreCase("")) {
+            //dialog.show();
+
+            DatabaseReference myRefUserAppList = database.getReference(SharedPrefUtil.getPref(MainActivityNew.this, "phone"));
+
+            myRefUserAppList.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    GenericTypeIndicator<ArrayList<Object>> genericTypeIndicator = new GenericTypeIndicator<ArrayList<Object>>() {
+                    };
+                    ArrayList<Object> value = dataSnapshot.getValue(genericTypeIndicator);
+                    if (value == null) {
+                        Toast.makeText(MainActivityNew.this, "Sahi phone number dalein", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    Log.d("tag", "Value is: " + value);
+                    AppHelper.userAppList = value;
+
+                    SharedPrefUtil.savePref(MainActivityNew.this, "phone", phoneNumber.getText().toString());
+                    Intent intent = new Intent(MainActivityNew.this, Onboarding1.class);
+                    startActivity(intent);
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+
+                }
+            });
+        }
+
+
         nextBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
 
                 if (phoneNumber.getText().length() < 10) {
                     Toast.makeText(MainActivityNew.this, "Sahi phone number dalein", Toast.LENGTH_SHORT).show();
@@ -112,6 +172,7 @@ public class MainActivityNew extends AppCompatActivity {
                         Log.d("tag", "Value is: " + value);
                         AppHelper.userAppList = value;
 
+                        SharedPrefUtil.savePref(MainActivityNew.this, "phone", phoneNumber.getText().toString());
                         Intent intent = new Intent(MainActivityNew.this, Onboarding1.class);
                         startActivity(intent);
                     }

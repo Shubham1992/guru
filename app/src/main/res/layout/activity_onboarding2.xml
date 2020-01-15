@@ -12,7 +12,8 @@
         android:id="@+id/rvFeatured"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="30dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginBottom="30dp"
         android:layout_weight="1" />
 
     <LinearLayout
@@ -24,7 +25,7 @@
 
         <TextView
             android:layout_width="240dp"
-            android:layout_height="260dp"
+            android:layout_height="match_parent"
             android:layout_gravity="center"
             android:layout_marginLeft="30dp"
             android:background="@drawable/combined_shape"
@@ -38,7 +39,7 @@
             android:text="Apne interest bataye,
 Smartphone ko superpower banaye."
             android:textColor="#454545"
-            android:textSize="24dp" />
+            android:textSize="20dp" />
 
         <ImageView
             android:layout_width="100dp"
@@ -66,7 +67,8 @@ Smartphone ko superpower banaye."
             android:text="SHURU KAREIN"
             android:textColor="@color/white"
             android:textSize="16sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:visibility="visible" />
     </LinearLayout>
 
 

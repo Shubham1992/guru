@@ -1,13 +1,14 @@
 package com.example.helperapp.onboarding;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageView;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.helperapp.R;
 
@@ -26,17 +27,34 @@ public class Onboarding6 extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             window.setStatusBarColor(getResources().getColor(R.color.colorPrimary));
         }
+        final ImageView imageView = findViewById(R.id.counter);
+
 
         new Handler().postDelayed(new Runnable() {
             public void run() {
 
-                Intent intent = new Intent();
-                intent.setClass(Onboarding6.this,
-                        QuizActivity.class);
 
-                startActivity(intent);
+                imageView.setImageResource(R.drawable.two);
 
+                new Handler().postDelayed(new Runnable() {
+                    public void run() {
+
+                        imageView.setImageResource(R.drawable.one);
+
+                        new Handler().postDelayed(new Runnable() {
+                            public void run() {
+
+                                Intent intent = new Intent();
+                                intent.setClass(Onboarding6.this,
+                                        QuizActivity.class);
+
+                                startActivity(intent);
+
+                            }
+                        }, 1000);
+                    }
+                }, 1000);
             }
-        }, 2000);
+        }, 1000);
     }
 }

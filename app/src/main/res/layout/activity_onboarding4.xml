@@ -31,11 +31,12 @@
                 android:layout_marginTop="30dp"
                 android:background="@drawable/combined_shape_green"
                 android:gravity="center"
+                android:lineHeight="25dp"
                 android:paddingLeft="15dp"
                 android:paddingRight="30dp"
                 android:text="Agar ye option aapke kaam ka hai to like button ko press karein"
                 android:textColor="@color/white"
-                android:textSize="20sp" />
+                android:textSize="19sp" />
 
             <ImageView
                 android:layout_width="100dp"

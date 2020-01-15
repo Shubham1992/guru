@@ -9,6 +9,7 @@ import android.view.animation.AccelerateInterpolator;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -29,6 +30,7 @@ public class QuizActivity extends AppCompatActivity {
 
     private ProgressBar progress;
     private int countProgress = 0;
+    private TextView tvCount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,9 +53,10 @@ public class QuizActivity extends AppCompatActivity {
         cardStackLayoutManager.setCanScrollVertical(false);
 
         progress = findViewById(R.id.progress);
+        tvCount = findViewById(R.id.tvCount);
 
 
-        ArrayList<Object> featuredList = AppHelper.userAppList;
+        final ArrayList<Object> featuredList = AppHelper.userAppList;
         ArrayList<AppModel> featuredListAppModels = new ArrayList<>();
         for (int i = 0; i < featuredList.size(); i++) {
             AppModel appModel = new AppModel();
@@ -62,6 +65,8 @@ public class QuizActivity extends AppCompatActivity {
             appModel.setIcon((String) ((HashMap) featuredList.get(i)).get("image"));
             featuredListAppModels.add(appModel);
         }
+
+        tvCount.setText("" + (countProgress++) + "/" + featuredList.size());
 
         progress.setMax(featuredList.size());
         progress.setScaleY(5f);
@@ -85,6 +90,7 @@ public class QuizActivity extends AppCompatActivity {
                 cardStackView.swipe();
 
                 progress.setProgress(progress.getProgress() + 1);
+                tvCount.setText("" + (countProgress++) + "/" + featuredList.size());
 
 
             }
@@ -106,6 +112,8 @@ public class QuizActivity extends AppCompatActivity {
                 cardStackView.swipe();
 
                 progress.setProgress(progress.getProgress() + 1);
+                tvCount.setText("" + (countProgress++) + "/" + featuredList.size());
+
 
             }
         });

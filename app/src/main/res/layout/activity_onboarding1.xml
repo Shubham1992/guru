@@ -1,36 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
     tools:context=".onboarding.Onboarding1">
-
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginLeft="30dp"
-        android:layout_marginTop="150dp"
-        android:layout_marginRight="30dp"
-        android:layout_marginBottom="100dp"
-        android:background="@drawable/combined_shape_onb1"
-        android:gravity="center"
-        android:lineHeight="40dp"
-        android:lineSpacingMultiplier="2"
-        android:padding="20dp"
-        android:text="Aapka phone bus time pass ke like nahi hai.
-Aap ispar kar sakte hai dher saari useful cheeze.
-Ghabrayen Nahi, Ye sab aapko sikhayega,
-Smartphone Guru."
-        android:textColor="@color/textGrayLight"
-        android:textSize="21sp" />
 
     <ImageView
         android:layout_width="120dp"
         android:layout_height="120dp"
-        android:layout_gravity="center|top"
-        android:layout_marginTop="50dp"
+        android:layout_gravity="center"
         android:src="@drawable/guru_2" />
+
+    <com.hanks.htextview.typer.TyperTextView
+        android:id="@+id/tvMain"
+        android:layout_width="match_parent"
+        android:layout_height="350dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:background="@drawable/combined_shape_onb1"
+        android:gravity="center"
+        android:padding="20dp"
+        android:text=""
+        android:textSize="24sp"
+        app:charIncrease="4"
+        app:typerSpeed="50" />
+
 
     <Button
         android:id="@+id/nextBtn"
@@ -42,9 +39,10 @@ Smartphone Guru."
         android:layout_marginRight="30dp"
         android:layout_marginBottom="30dp"
         android:background="@drawable/btn_green_round_corner"
-        android:text="READY?"
+        android:text="Interest add karein"
         android:textColor="@color/white"
         android:textSize="16sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:visibility="gone" />
 
-</FrameLayout>
+</LinearLayout>

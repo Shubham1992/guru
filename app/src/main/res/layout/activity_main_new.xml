@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    android:gravity="center"
+    android:gravity="top"
     android:orientation="vertical"
     tools:context=".MainActivityNew">
 
@@ -12,6 +12,7 @@
         android:layout_width="120dp"
         android:layout_height="120dp"
         android:layout_gravity="center"
+        android:layout_marginTop="100dp"
         android:src="@drawable/guru_2" />
 
     <TextView
@@ -42,7 +43,9 @@ chalana seekhe"
             android:gravity="center"
             android:hint="Phone number dalein"
             android:inputType="phone"
-            android:padding="10dp" />
+            android:padding="10dp"
+            android:text="9910978655"
+            android:textSize="15sp" />
 
         <TextView
             android:layout_width="70dp"
@@ -52,18 +55,32 @@ chalana seekhe"
             android:gravity="center"
             android:text="+91"
             android:textColor="@color/black"
-            android:textSize="18sp"
+            android:textSize="16sp"
             android:textStyle="bold"></TextView>
+
+        <ImageView
+            android:id="@+id/nextBtn"
+            android:layout_width="70dp"
+            android:layout_height="41dp"
+            android:layout_gravity="center|right"
+            android:layout_marginRight="1dp"
+            android:background="@drawable/btn_green_round_corner"
+            android:gravity="center"
+            android:padding="10dp"
+            android:src="@drawable/check_mark"
+            android:textColor="@color/black"
+            android:textStyle="bold"></ImageView>
+
     </FrameLayout>
 
 
     <Button
-        android:id="@+id/nextBtn"
         android:layout_width="match_parent"
         android:layout_height="45dp"
         android:layout_margin="30dp"
         android:background="@drawable/btn_green_round_corner"
         android:text="ANDAR CHALE"
         android:textColor="@color/white"
-        android:textSize="21sp" />
+        android:textSize="21sp"
+        android:visibility="gone" />
 </LinearLayout>

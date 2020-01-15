@@ -1,5 +1,6 @@
 package com.example.helperapp.onboarding;
 
+import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
@@ -118,6 +119,9 @@ public class QuizActivity extends AppCompatActivity {
             }
         });
 
+        Typeface faceBold = Typeface.createFromAsset(getAssets(),
+                "fonts/mPLUSRounded1cExtraBold.ttf");
+        tvCount.setTypeface(faceBold);
 
     }
 }

@@ -24,6 +24,7 @@
         android:gravity="center"
         android:padding="20dp"
         android:text=""
+        android:textColor="@color/textGrayLight"
         android:textSize="24sp"
         app:charIncrease="4"
         app:typerSpeed="50" />
@@ -35,13 +36,13 @@
         android:layout_height="40dp"
         android:layout_gravity="bottom"
         android:layout_marginLeft="30dp"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="50dp"
         android:layout_marginRight="30dp"
         android:layout_marginBottom="30dp"
         android:background="@drawable/btn_green_round_corner"
         android:text="Interest add karein"
         android:textColor="@color/white"
-        android:textSize="16sp"
+        android:textSize="18sp"
         android:textStyle="bold"
         android:visibility="gone" />
 

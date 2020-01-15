@@ -1,6 +1,7 @@
 package com.example.helperapp.onboarding;
 
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -48,8 +49,13 @@ public class Onboarding1 extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
         final TyperTextView textView = findViewById(R.id.tvMain);
+
+        Typeface face = Typeface.createFromAsset(getAssets(),
+                "fonts/mPLUSRounded1cMedium.ttf");
+        textView.setTypeface(face);
+        nextBtn.setTypeface(face);
+
         textView.animateText(getCurrentText());
         counter++;
 

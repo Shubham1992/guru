@@ -16,6 +16,7 @@
         android:src="@drawable/guru_2" />
 
     <TextView
+        android:id="@+id/tvMain"
         android:layout_width="280dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"

@@ -1,8 +1,8 @@
 package com.example.helperapp;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,6 +12,7 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -54,6 +55,10 @@ public class MainActivityNew extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             window.setStatusBarColor(getResources().getColor(R.color.colorPrimary));
         }
+        Typeface face = Typeface.createFromAsset(getAssets(),
+                "fonts/mPLUSRounded1cMedium.ttf");
+        TextView textView = (TextView) findViewById(R.id.tvMain);
+        textView.setTypeface(face);
 
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
 
@@ -134,6 +139,8 @@ public class MainActivityNew extends AppCompatActivity {
                     SharedPrefUtil.savePref(MainActivityNew.this, "phone", phoneNumber.getText().toString());
                     Intent intent = new Intent(MainActivityNew.this, Onboarding1.class);
                     startActivity(intent);
+                    finish();
+
                 }
 
                 @Override
@@ -175,6 +182,7 @@ public class MainActivityNew extends AppCompatActivity {
                         SharedPrefUtil.savePref(MainActivityNew.this, "phone", phoneNumber.getText().toString());
                         Intent intent = new Intent(MainActivityNew.this, Onboarding1.class);
                         startActivity(intent);
+                        finish();
                     }
 
                     @Override

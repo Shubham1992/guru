@@ -26,10 +26,11 @@
 
             <TextView
                 android:id="@+id/tv1"
-                android:layout_width="250dp"
+                android:layout_width="match_parent"
                 android:layout_height="150dp"
                 android:layout_marginLeft="30dp"
                 android:layout_marginTop="30dp"
+                android:layout_weight="1"
                 android:background="@drawable/combined_shape_green"
                 android:gravity="center"
                 android:lineHeight="25dp"
@@ -43,37 +44,97 @@
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:layout_gravity="bottom"
+                android:layout_marginRight="20dp"
                 android:src="@drawable/guru_2" />
         </LinearLayout>
 
 
     </FrameLayout>
 
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:gravity="center"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingTop="20dp"
+        android:paddingBottom="20dp">
 
-        <ImageView
-            android:id="@+id/image"
-            android:layout_width="200dp"
-            android:layout_height="200dp"
-            android:background="@color/white"
-            android:src="@drawable/like" />
+        <FrameLayout
+            android:layout_width="150dp"
+            android:layout_height="150dp">
+
+            <ImageView
+                android:layout_width="130dp"
+                android:layout_height="130dp"
+                android:layout_gravity="center"
+                android:src="@drawable/group_4" />
+
+            <ImageView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="right|bottom"
+                android:src="@drawable/smiley" />
+        </FrameLayout>
 
         <TextView
             android:id="@+id/tv2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:gravity="center_horizontal"
+            android:gravity="center"
             android:letterSpacing="0.09"
-            android:lineSpacingExtra="-10sp"
-            android:text="Love it!"
-            android:textColor="@color/textGrayLight"
-            android:textSize="28sp" />
+            android:lineSpacingExtra="8sp"
+            android:text="Online Shopping Without Stress"
+            android:textColor="@color/black"
+            android:textSize="21sp" />
+
+        <TextView
+            android:id="@+id/tv3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginRight="30dp"
+            android:gravity="center_horizontal"
+            android:lineSpacingExtra="9sp"
+            android:text="Smartphone pe ghar baithe shopping karein on your favourite apps. "
+            android:textColor="#454545"
+            android:textSize="16sp" />
+
+
+        <ImageView
+            android:id="@+id/image"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_gravity="right"
+            android:layout_marginRight="100dp"
+            android:background="@color/white"
+            android:src="@drawable/like" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:layout_marginRight="70dp"
+            android:gravity="center">
+
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/rise"></ImageView>
+
+            <TextView
+                android:id="@+id/tv4"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="Press\nhere"
+                android:textColor="@android:color/holo_red_light"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+        </LinearLayout>
 
         <Button
             android:id="@+id/nextBtn"
@@ -87,7 +148,8 @@
             android:text="OK NEXT"
             android:textColor="@color/white"
             android:textSize="16sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:visibility="gone" />
 
     </LinearLayout>
 

@@ -27,7 +27,7 @@
         android:textColor="@color/textGrayLight"
         android:textSize="24sp"
         app:charIncrease="4"
-        app:typerSpeed="50" />
+        app:typerSpeed="80" />
 
 
     <Button
@@ -44,6 +44,6 @@
         android:textColor="@color/white"
         android:textSize="18sp"
         android:textStyle="bold"
-        android:visibility="gone" />
+        android:visibility="visible" />
 
 </LinearLayout>

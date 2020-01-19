@@ -68,12 +68,23 @@ chalana seekhe"
             android:background="@drawable/btn_green_round_corner"
             android:gravity="center"
             android:padding="10dp"
-            android:src="@drawable/check_mark"
+            android:src="@drawable/right_arrow"
             android:textColor="@color/black"
             android:textStyle="bold"></ImageView>
 
     </FrameLayout>
 
+    <TextView
+        android:id="@+id/tvError"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:gravity="center"
+        android:text="Yeh number registered nahi hai"
+        android:textColor="@android:color/holo_red_light"
+        android:textSize="22sp"
+        android:visibility="gone" />
 
     <Button
         android:layout_width="match_parent"

@@ -3,76 +3,85 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
     android:orientation="vertical"
-    tools:context=".onboarding.Onboarding3">
+    tools:context=".onboarding.ThankYouActivity">
 
-    <FrameLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="2">
+        android:layout_height="wrap_content">
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_gravity="bottom"
-            android:layout_marginBottom="10dp"
-            android:background="@color/lineColor" />
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="210dp"
-            android:layout_gravity="bottom">
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
 
             <TextView
-                android:id="@+id/tv1"
-                android:layout_width="match_parent"
-                android:layout_height="150dp"
-                android:layout_marginLeft="30dp"
-                android:layout_marginTop="30dp"
-                android:layout_weight="1"
-                android:background="@drawable/combined_shape_green"
-                android:gravity="center"
-                android:lineHeight="25dp"
-                android:paddingLeft="15dp"
-                android:paddingRight="25dp"
-                android:text="Hum aapko \nsmartphone pe nayi or exciting cheeze neeche dikhayenge"
-                android:textColor="@color/white"
-                android:textSize="19sp" />
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:lineSpacingMultiplier="1.43"
+                android:padding="5dp"
+                android:text="Thank you for showing \ninterest!"
+                android:textColor="#454545"
+                android:textSize="21sp"
+                android:textStyle="bold" />
 
-            <ImageView
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_gravity="bottom"
-                android:layout_marginRight="20dp"
-                android:src="@drawable/guru_2" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:lineSpacingMultiplier="1.25"
+                android:padding="5dp"
+                android:text="Hum abhi is item ka demo \nready kar rahe hai"
+                android:textColor="#454545"
+                android:textSize="16sp" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tv3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    android:text="Available on \n1st February"></TextView>
+            </LinearLayout>
         </LinearLayout>
 
+        <ImageView
+            android:layout_width="90dp"
+            android:layout_height="90dp"
+            android:layout_gravity="bottom"
+            android:layout_marginRight="20dp"
+            android:src="@drawable/guru_2" />
+    </LinearLayout>
 
-    </FrameLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:gravity="center"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp">
 
         <FrameLayout
-            android:layout_width="170dp"
-            android:layout_height="170dp">
+            android:layout_width="150dp"
+            android:layout_height="150dp">
 
             <ImageView
-                android:id="@+id/image"
                 android:layout_width="150dp"
                 android:layout_height="150dp"
                 android:layout_gravity="center"
                 android:src="@drawable/group_4" />
-
         </FrameLayout>
 
         <TextView
-            android:id="@+id/tv2"
+            android:id="@+id/tv4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
@@ -81,10 +90,11 @@
             android:lineSpacingExtra="8sp"
             android:text="Online Shopping Without Stress"
             android:textColor="@color/black"
-            android:textSize="21sp" />
+            android:textSize="21sp"
+            android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/tv3"
+            android:id="@+id/tv5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="30dp"
@@ -105,11 +115,12 @@
             android:layout_marginRight="30dp"
             android:layout_marginBottom="30dp"
             android:background="@drawable/btn_green_round_corner"
-            android:text="SHURU KAREIN"
+            android:text="MUJHE INFORM KAREIN"
             android:textColor="@color/white"
             android:textSize="18sp"
             android:textStyle="bold" />
 
     </LinearLayout>
+
 
 </LinearLayout>

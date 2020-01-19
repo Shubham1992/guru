@@ -1,5 +1,6 @@
 package com.example.helperapp.onboarding;
 
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,17 +13,28 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.helperapp.R;
 import com.example.helperapp.adapters.QuizCardAdapter;
 import com.example.helperapp.models.AppModel;
 import com.example.helperapp.utils.AppHelper;
+import com.example.helperapp.utils.SharedPrefUtil;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.yuyakaido.android.cardstackview.CardStackLayoutManager;
 import com.yuyakaido.android.cardstackview.CardStackView;
 import com.yuyakaido.android.cardstackview.Direction;
 import com.yuyakaido.android.cardstackview.Duration;
 import com.yuyakaido.android.cardstackview.SwipeAnimationSetting;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,6 +44,7 @@ public class QuizActivity extends AppCompatActivity {
     private ProgressBar progress;
     private int countProgress = 0;
     private TextView tvCount;
+    JSONArray jsonArray = new JSONArray();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +71,7 @@ public class QuizActivity extends AppCompatActivity {
 
 
         final ArrayList<Object> featuredList = AppHelper.userAppList;
-        ArrayList<AppModel> featuredListAppModels = new ArrayList<>();
+        final ArrayList<AppModel> featuredListAppModels = new ArrayList<>();
         for (int i = 0; i < featuredList.size(); i++) {
             AppModel appModel = new AppModel();
             appModel.setName((String) ((HashMap) featuredList.get(i)).get("name"));
@@ -68,6 +81,7 @@ public class QuizActivity extends AppCompatActivity {
         }
 
         tvCount.setText("" + (countProgress++) + "/" + featuredList.size());
+
 
         progress.setMax(featuredList.size());
         progress.setScaleY(5f);
@@ -91,8 +105,23 @@ public class QuizActivity extends AppCompatActivity {
                 cardStackView.swipe();
 
                 progress.setProgress(progress.getProgress() + 1);
-                tvCount.setText("" + (countProgress++) + "/" + featuredList.size());
 
+                tvCount.setText("" + (countProgress) + "/" + featuredList.size());
+
+                JSONObject jsonObject = new JSONObject();
+                try {
+                    jsonObject.put("name", featuredListAppModels.get(countProgress - 1).getName());
+                    AppHelper.selectedappModels.add(featuredListAppModels.get(countProgress - 1));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                jsonArray.put(jsonObject);
+
+                if ((countProgress) == featuredListAppModels.size()) {
+                    completeQuiz();
+                    return;
+                }
+                countProgress++;
 
             }
         });
@@ -113,8 +142,13 @@ public class QuizActivity extends AppCompatActivity {
                 cardStackView.swipe();
 
                 progress.setProgress(progress.getProgress() + 1);
-                tvCount.setText("" + (countProgress++) + "/" + featuredList.size());
+                tvCount.setText("" + (countProgress) + "/" + featuredList.size());
 
+
+                if (countProgress == featuredListAppModels.size() - 1) {
+                    completeQuiz();
+                }
+                countProgress++;
 
             }
         });
@@ -123,5 +157,24 @@ public class QuizActivity extends AppCompatActivity {
                 "fonts/mPLUSRounded1cExtraBold.ttf");
         tvCount.setTypeface(faceBold);
 
+    }
+
+    private void completeQuiz() {
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRefAppStrings = database.getReference(SharedPrefUtil.getPref(QuizActivity.this, "phone") + "_selected");
+        myRefAppStrings.setValue(jsonArray.toString());
+        myRefAppStrings.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Intent intent = new Intent(QuizActivity.this, AccountInfoAfterQuiz.class);
+                startActivity(intent);
+                finish();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 }

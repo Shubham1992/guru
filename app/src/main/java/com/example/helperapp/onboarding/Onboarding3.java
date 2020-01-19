@@ -10,9 +10,9 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.example.helperapp.R;
-
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.helperapp.R;
 
 public class Onboarding3 extends AppCompatActivity {
 
@@ -40,8 +40,11 @@ public class Onboarding3 extends AppCompatActivity {
 
         Typeface face = Typeface.createFromAsset(getAssets(),
                 "fonts/mPLUSRounded1cMedium.ttf");
-        nextBtn.setTypeface(face);
-        tv1.setTypeface(face);
+        Typeface faceBold = Typeface.createFromAsset(getAssets(),
+                "fonts/mPLUSRounded1cExtraBold.ttf");
+        tv1.setTypeface(faceBold);
+
+        nextBtn.setTypeface(faceBold);
         tv2.setTypeface(face);
         tv3.setTypeface(face);
 

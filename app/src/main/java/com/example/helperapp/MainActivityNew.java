@@ -1,6 +1,9 @@
 package com.example.helperapp;
 
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Build;
@@ -38,6 +41,7 @@ public class MainActivityNew extends AppCompatActivity {
     JSONObject jsonObject = new JSONObject();
     private ImageView nextBtn;
     private EditText phoneNumber;
+    private AlertDialog alertDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,9 +49,11 @@ public class MainActivityNew extends AppCompatActivity {
         setContentView(R.layout.activity_main_new);
         nextBtn = findViewById(R.id.nextBtn);
         phoneNumber = findViewById(R.id.phoneNumber);
-
+        final TextView tvError = findViewById(R.id.tvError);
         Window window = getWindow();
-
+        final ProgressDialog progressDialog = new ProgressDialog(MainActivityNew.this);
+        progressDialog.setMessage("Loading...");
+        progressDialog.setCancelable(true);
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
 
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
@@ -119,18 +125,18 @@ public class MainActivityNew extends AppCompatActivity {
         //final ProgressDialog dialog = ProgressDialog.show(MainActivityNew.this, "", "Loading. Please wait...", true);
 
         if (!SharedPrefUtil.getPref(MainActivityNew.this, "phone").equalsIgnoreCase("")) {
-            //dialog.show();
+            progressDialog.show();
 
             DatabaseReference myRefUserAppList = database.getReference(SharedPrefUtil.getPref(MainActivityNew.this, "phone"));
 
             myRefUserAppList.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    progressDialog.dismiss();
                     GenericTypeIndicator<ArrayList<Object>> genericTypeIndicator = new GenericTypeIndicator<ArrayList<Object>>() {
                     };
                     ArrayList<Object> value = dataSnapshot.getValue(genericTypeIndicator);
                     if (value == null) {
-                        Toast.makeText(MainActivityNew.this, "Sahi phone number dalein", Toast.LENGTH_SHORT).show();
                         return;
                     }
                     Log.d("tag", "Value is: " + value);
@@ -146,7 +152,7 @@ public class MainActivityNew extends AppCompatActivity {
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
 
-
+                    progressDialog.dismiss();
                 }
             });
         }
@@ -155,6 +161,8 @@ public class MainActivityNew extends AppCompatActivity {
         nextBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                tvError.setVisibility(View.GONE);
+
 
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
@@ -173,7 +181,7 @@ public class MainActivityNew extends AppCompatActivity {
                         };
                         ArrayList<Object> value = dataSnapshot.getValue(genericTypeIndicator);
                         if (value == null) {
-                            Toast.makeText(MainActivityNew.this, "Sahi phone number dalein", Toast.LENGTH_SHORT).show();
+                            tvError.setVisibility(View.VISIBLE);
                             return;
                         }
                         Log.d("tag", "Value is: " + value);
@@ -196,5 +204,23 @@ public class MainActivityNew extends AppCompatActivity {
         });
 
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (!AppHelper.isNetworkAvailable(MainActivityNew.this)) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivityNew.this);
+            builder.setMessage("Apke phone me internet nahi chal raha hai");
+            builder.setPositiveButton("RETRY", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    alertDialog.dismiss();
+                }
+            });
+            alertDialog = builder.create();
+            alertDialog.show();
+        }
     }
 }

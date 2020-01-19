@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,6 +18,7 @@ import com.example.helperapp.R;
 public class Onboarding5 extends AppCompatActivity {
 
     private Button nextBtn;
+    private ImageView image;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,7 +31,11 @@ public class Onboarding5 extends AppCompatActivity {
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         Typeface face = Typeface.createFromAsset(getAssets(),
                 "fonts/mPLUSRounded1cMedium.ttf");
-        tv1.setTypeface(face);
+        Typeface faceBold = Typeface.createFromAsset(getAssets(),
+                "fonts/mPLUSRounded1cExtraBold.ttf");
+
+        tv1.setTypeface(faceBold);
+        nextBtn.setTypeface(faceBold);
         tv2.setTypeface(face);
 
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
@@ -37,7 +43,8 @@ public class Onboarding5 extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             window.setStatusBarColor(getResources().getColor(R.color.colorPrimary));
         }
-        nextBtn.setOnClickListener(new View.OnClickListener() {
+        image = findViewById(R.id.image);
+        image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(Onboarding5.this, Onboarding6.class);

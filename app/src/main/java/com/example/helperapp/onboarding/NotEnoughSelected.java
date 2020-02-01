@@ -1,9 +1,11 @@
 package com.example.helperapp.onboarding;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -12,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.helperapp.R;
+import com.example.helperapp.adapters.NotEnoughAppListAdapter;
 import com.example.helperapp.adapters.SelectedAppListAdapter;
 import com.example.helperapp.models.AppModel;
 import com.example.helperapp.utils.AppHelper;
@@ -26,40 +29,55 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
-public class AccountInfoAfterQuiz extends AppCompatActivity {
-
+public class NotEnoughSelected extends AppCompatActivity implements NotEnoughAppListAdapter.ClickedRadio {
     private RecyclerView rvAppList;
-    ArrayList<AppModel> userAppList = new ArrayList<>();
-
+    private ProgressBar progressBar;
+    private TextView tvCount;
+    ArrayList<AppModel> allAppModels = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_account_info_after_quiz);
+        setContentView(R.layout.activity_not_enough_selected);
+        SharedPrefUtil.savePref(NotEnoughSelected.this, "gotoaccountPage", "true");
 
-        SharedPrefUtil.savePref(AccountInfoAfterQuiz.this, "gotoaccountPage", "true");
+
+        allAppModels = new ArrayList<>();
+        for (int i = 0; i < AppHelper.AllappModels.size(); i++) {
+            AppModel appModel = new AppModel();
+            appModel.setName((String) ((HashMap) AppHelper.AllappModels.get(i)).get("name"));
+            appModel.setDescription((String) ((HashMap) AppHelper.AllappModels.get(i)).get("description"));
+            appModel.setIcon((String) ((HashMap) AppHelper.AllappModels.get(i)).get("image"));
+            allAppModels.add(appModel);
+        }
+
 
         rvAppList = findViewById(R.id.rvAppList);
-        SelectedAppListAdapter selectedAppListAdapter = new SelectedAppListAdapter(AppHelper.selectedappModels, AccountInfoAfterQuiz.this);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(AccountInfoAfterQuiz.this);
+        NotEnoughAppListAdapter selectedAppListAdapter = new NotEnoughAppListAdapter(allAppModels, NotEnoughSelected.this);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(NotEnoughSelected.this);
         rvAppList.setLayoutManager(linearLayoutManager);
         rvAppList.setAdapter(selectedAppListAdapter);
-        TextView tv3 = findViewById(R.id.tv3);
         TextView tv1 = findViewById(R.id.tv1);
-        final ProgressDialog progressDialog = new ProgressDialog(AccountInfoAfterQuiz.this);
-        progressDialog.setMessage("Loading...");
-        progressDialog.setCancelable(true);
+
         Typeface faceBold = Typeface.createFromAsset(getAssets(),
                 "fonts/mPLUSRounded1cExtraBold.ttf");
-        tv3.setTypeface(faceBold);
         tv1.setTypeface(faceBold);
-        tv3.setText("Aapke seekhne ke liye " + AppHelper.selectedappModels.size() + " items ready hain");
+
+        progressBar = findViewById(R.id.progress);
+        progressBar.setScaleY(5f);
+        progressBar.setProgress(AppHelper.selectedappModels.size());
+        tvCount = findViewById(R.id.tvCount);
+        tvCount.setText(progressBar.getProgress() + "/3");
+        final ProgressDialog progressDialog = new ProgressDialog(NotEnoughSelected.this);
+        progressDialog.setMessage("Loading...");
+        progressDialog.setCancelable(true);
 
 
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
 
-        DatabaseReference myRefUserAppList = database.getReference(SharedPrefUtil.getPref(AccountInfoAfterQuiz.this, "phone") + "_selected");
+        DatabaseReference myRefUserAppList = database.getReference(SharedPrefUtil.getPref(NotEnoughSelected.this, "phone") + "_selected");
 
         myRefUserAppList.addValueEventListener(new ValueEventListener() {
             @Override
@@ -89,17 +107,31 @@ public class AccountInfoAfterQuiz extends AppCompatActivity {
 
     }
 
+
+    @Override
+    public void clickedRadio(AppModel appModel) {
+        progressBar.setProgress(progressBar.getProgress() + 1);
+        tvCount.setText(progressBar.getProgress() + "/3");
+
+        if (progressBar.getProgress() == 3) {
+            Intent intent = new Intent(NotEnoughSelected.this, AccountInfoAfterQuiz.class);
+            startActivity(intent);
+            finish();
+        }
+    }
+
     private void createAppList(JSONArray jsonArray) {
+        allAppModels = new ArrayList<>();
         for (int i = 0; i < jsonArray.length(); i++) {
             AppModel appModel = new AppModel();
             try {
                 appModel.setName((String) (jsonArray.getJSONObject(i)).get("name"));
                 appModel.setDescription((String) (jsonArray.getJSONObject(i)).get("description"));
                 appModel.setIcon((String) (jsonArray.getJSONObject(i)).get("image"));
-                userAppList.add(appModel);
+                allAppModels.add(appModel);
 
 
-                SelectedAppListAdapter selectedAppListAdapter = new SelectedAppListAdapter(userAppList, AccountInfoAfterQuiz.this);
+                SelectedAppListAdapter selectedAppListAdapter = new SelectedAppListAdapter(allAppModels, NotEnoughSelected.this);
                 rvAppList.setAdapter(selectedAppListAdapter);
 
 

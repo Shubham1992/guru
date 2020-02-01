@@ -1,13 +1,13 @@
 package com.example.helperapp.adapters;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Typeface;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -15,13 +15,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.helperapp.R;
 import com.example.helperapp.models.AppModel;
-import com.example.helperapp.onboarding.AccountInfoAfterQuiz;
-import com.example.helperapp.onboarding.ThankYouActivity;
+import com.example.helperapp.utils.AppHelper;
 
 import java.util.ArrayList;
 
 
-public class SelectedAppListAdapter extends RecyclerView.Adapter<SelectedAppListAdapter.MyViewHolder> {
+public class NotEnoughAppListAdapter extends RecyclerView.Adapter<NotEnoughAppListAdapter.MyViewHolder> {
 
     private ArrayList<AppModel> appModels;
     public Context mContext;
@@ -29,16 +28,18 @@ public class SelectedAppListAdapter extends RecyclerView.Adapter<SelectedAppList
     public class MyViewHolder extends RecyclerView.ViewHolder {
         public TextView name;
         public ImageView imageView;
+        public RadioButton rb;
 
         public MyViewHolder(View view) {
             super(view);
             name = view.findViewById(R.id.name);
             imageView = view.findViewById(R.id.image);
+            rb = view.findViewById(R.id.rb);
         }
     }
 
 
-    public SelectedAppListAdapter(ArrayList<AppModel> moviesList, Context context) {
+    public NotEnoughAppListAdapter(ArrayList<AppModel> moviesList, Context context) {
         this.appModels = moviesList;
         this.mContext = context;
     }
@@ -52,31 +53,22 @@ public class SelectedAppListAdapter extends RecyclerView.Adapter<SelectedAppList
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-
-
-        final AppModel appModel = new AppModel();
-
-        appModel.setName(appModels.get(position).getName());
-        appModel.setDescription(appModels.get(position).getDescription());
-        appModel.setIcon(appModels.get(position).getIcon());
-
-
+        final AppModel appModel = appModels.get(position);
         Typeface faceBold = Typeface.createFromAsset(mContext.getAssets(),
                 "fonts/mPLUSRounded1cExtraBold.ttf");
         holder.name.setTypeface(faceBold);
-
+        holder.rb.setVisibility(View.VISIBLE);
         holder.name.setText(appModel.getName());
         if (appModel.getIcon() != null) {
             Glide.with(mContext).load(appModel.getIcon()).into(holder.imageView);
 
         }
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
+        holder.rb.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(mContext, ThankYouActivity.class);
-                intent.putExtra("appModel", appModel);
-                mContext.startActivity(intent);
-                ((Activity)mContext).finish();
+                Log.e("clicked", "radio");
+                AppHelper.selectedappModels.add(appModel);
+                ((ClickedRadio)mContext).clickedRadio(appModel);
             }
         });
 
@@ -87,4 +79,10 @@ public class SelectedAppListAdapter extends RecyclerView.Adapter<SelectedAppList
     public int getItemCount() {
         return appModels.size();
     }
+
+    public interface ClickedRadio {
+
+        public void clickedRadio(AppModel appModel);
+    }
 }
+

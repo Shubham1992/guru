@@ -36,7 +36,7 @@
                 android:lineHeight="25dp"
                 android:paddingLeft="15dp"
                 android:paddingRight="25dp"
-                android:text="Hum aapko \nsmartphone pe nayi or exciting cheeze neeche dikhayenge"
+                android:text="Hum aapko smartphone pe nayi or exciting cheeze neeche dikhayenge"
                 android:textColor="@color/white"
                 android:textSize="19sp" />
 
@@ -59,13 +59,13 @@
         android:orientation="vertical">
 
         <FrameLayout
-            android:layout_width="170dp"
-            android:layout_height="170dp">
+            android:layout_width="150dp"
+            android:layout_height="150dp">
 
             <ImageView
                 android:id="@+id/image"
-                android:layout_width="150dp"
-                android:layout_height="150dp"
+                android:layout_width="130dp"
+                android:layout_height="130dp"
                 android:layout_gravity="center"
                 android:src="@drawable/group_4" />
 
@@ -78,10 +78,10 @@
             android:layout_marginTop="30dp"
             android:gravity="center"
             android:letterSpacing="0.09"
-            android:lineSpacingExtra="8sp"
+            android:lineSpacingExtra="2sp"
             android:text="Online Shopping Without Stress"
             android:textColor="@color/black"
-            android:textSize="21sp" />
+            android:textSize="20sp" />
 
         <TextView
             android:id="@+id/tv3"
@@ -91,10 +91,9 @@
             android:layout_marginTop="20dp"
             android:layout_marginRight="30dp"
             android:gravity="center_horizontal"
-            android:lineSpacingExtra="9sp"
             android:text="Smartphone pe ghar baithe shopping karein on your favourite apps. "
             android:textColor="#454545"
-            android:textSize="16sp" />
+            android:textSize="15sp" />
 
         <Button
             android:id="@+id/nextBtn"

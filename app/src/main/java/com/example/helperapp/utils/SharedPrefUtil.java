@@ -20,4 +20,9 @@ public class SharedPrefUtil {
         return prefs.getString(key, "");
     }
 
+    public static SharedPreferences getInstance(Context context) {
+
+        SharedPreferences prefs = context.getSharedPreferences("GuruPrefs", MODE_PRIVATE);
+        return prefs;
+    }
 }

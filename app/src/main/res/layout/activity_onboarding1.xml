@@ -12,6 +12,7 @@
         android:layout_width="120dp"
         android:layout_height="120dp"
         android:layout_gravity="center"
+        android:layout_weight="1"
         android:src="@drawable/guru_2" />
 
     <com.hanks.htextview.typer.TyperTextView
@@ -20,6 +21,7 @@
         android:layout_height="350dp"
         android:layout_marginLeft="30dp"
         android:layout_marginRight="30dp"
+        android:layout_weight="1"
         android:background="@drawable/combined_shape_onb1"
         android:gravity="center"
         android:padding="20dp"
@@ -39,11 +41,12 @@
         android:layout_marginTop="50dp"
         android:layout_marginRight="30dp"
         android:layout_marginBottom="30dp"
+        android:layout_weight="1"
         android:background="@drawable/btn_green_round_corner"
         android:text="Interest add karein"
         android:textColor="@color/white"
         android:textSize="18sp"
         android:textStyle="bold"
-        android:visibility="visible" />
+        android:visibility="invisible" />
 
 </LinearLayout>

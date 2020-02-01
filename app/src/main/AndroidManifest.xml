@@ -12,8 +12,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".onboarding.ThankYouActivity"
+            android:name=".onboarding.NotEnoughSelected"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"></activity>
+        <activity
+            android:name=".onboarding.ThankYouActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <activity
             android:name=".onboarding.AccountInfoAfterQuiz"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />

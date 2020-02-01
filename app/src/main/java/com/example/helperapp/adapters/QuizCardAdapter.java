@@ -2,6 +2,8 @@ package com.example.helperapp.adapters;
 
 import android.content.Context;
 import android.graphics.Typeface;
+import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -60,6 +62,18 @@ public class QuizCardAdapter extends RecyclerView.Adapter<QuizCardAdapter.MyView
                 "fonts/mPLUSRounded1cExtraBold.ttf");
         holder.name.setTypeface(faceBold);
         holder.item_description.setTypeface(face);
+
+        DisplayMetrics metrics = mContext.getResources().getDisplayMetrics();
+        Log.e("metrics", "" + metrics.densityDpi);
+
+        if (metrics.density <= 2) {
+            holder.name.setTextSize(16f);
+            holder.item_description.setTextSize(16f);
+            holder.imageView.getLayoutParams().height = 210;
+            holder.imageView.getLayoutParams().width = 210;
+            holder.imageView.requestLayout();
+        }
+
     }
 
     @Override

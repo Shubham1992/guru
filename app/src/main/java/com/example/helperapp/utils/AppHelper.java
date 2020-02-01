@@ -15,7 +15,9 @@ public class AppHelper {
     public static ArrayList<Object> featuredList = new ArrayList<>();
     public static ArrayList<Object> userAppList = new ArrayList<>();
     public static ArrayList<AppModel> selectedappModels =  new ArrayList<AppModel>();
+    public static ArrayList<Object> AllappModels =  new ArrayList<Object>();
     public static HashMap<String, Object> stringList = new HashMap<String, Object>();
+
 
     public static boolean isNetworkAvailable(Context context) {
         ConnectivityManager connectivityManager

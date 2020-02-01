@@ -62,10 +62,11 @@
         android:paddingBottom="20dp">
 
         <FrameLayout
-            android:layout_width="150dp"
-            android:layout_height="150dp">
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
 
             <ImageView
+                android:id="@+id/imgView"
                 android:layout_width="130dp"
                 android:layout_height="130dp"
                 android:layout_gravity="center"
@@ -85,7 +86,6 @@
             android:layout_marginTop="30dp"
             android:gravity="center"
             android:letterSpacing="0.09"
-            android:lineSpacingExtra="8sp"
             android:text="Online Shopping Without Stress"
             android:textColor="@color/black"
             android:textSize="21sp" />
@@ -98,7 +98,7 @@
             android:layout_marginTop="20dp"
             android:layout_marginRight="30dp"
             android:gravity="center_horizontal"
-            android:lineSpacingExtra="9sp"
+            android:lineSpacingExtra="2sp"
             android:text="Smartphone pe ghar baithe shopping karein on your favourite apps. "
             android:textColor="#454545"
             android:textSize="16sp" />

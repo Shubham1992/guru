@@ -5,6 +5,7 @@ import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -47,10 +48,16 @@ public class Onboarding1 extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(Onboarding1.this, Onboarding3.class);
                 startActivity(intent);
+                finish();
             }
         });
         final TyperTextView textView = findViewById(R.id.tvMain);
+        DisplayMetrics metrics = getResources().getDisplayMetrics();
+        Log.e("metrics", "" + metrics.densityDpi);
 
+        if (metrics.density <= 2) {
+            textView.setTextSize(20f);
+        }
         Typeface face = Typeface.createFromAsset(getAssets(),
                 "fonts/mPLUSRounded1cMedium.ttf");
         textView.setTypeface(face);
@@ -90,23 +97,23 @@ public class Onboarding1 extends AppCompatActivity {
                     " mei hu Smartphone Guru";
         }
         if (counter == 2) {
-            return "Kya aap smartphone chalane mei kabhi kabhi takleef mehsoos karte hai? \uD83D\uDE14";
+            return "Kya aap smartphone chalane mei kabhi kabhi problems face karte hai? \uD83D\uDE14";
         }
         if (counter == 3) {
-            return "Jaise nayi apps install na kar pana ya unpe account setup na kar pana?";
+            return "Jaise nayi apps install na kar pana ya unpe account setup karne mei problem hona?";
         }
         if (counter == 4) {
-            return "Ya fir online payment karne mei tension hona? \uD83D\uDCB3\uD83D\uDCB0\uD83D\uDECD️";
+            return "Ya fir online payment karte hue sar mei dard hona? \uD83D\uDE05️";
         }
         if (counter == 5) {
-            return "Ghabrayein nahi, smartphones se confused aap akele nahi hai. \n" +
-                    "Ye problems kaafi logo ko aati hai.️";
+            return "Don’t worry, smartphones se confused aap akele nahi hai. \n" +
+                    "Ye dikkat kaafi logo ko aati hai.️";
         }
         if (counter == 6) {
-            return "Mei aapko in sab problems mei support karunga taaki aap smartphone use kar sake with confidence and independence.️";
+            return "In sab problems mei aapki help mai karunga taaki aap smartphone use kar sake with confidence and independence.️";
         }
         if (counter == 7) {
-            return "Isse pehle ki mei apki help kar saku, mei janana chahta hu aap kin cheezo mei interested hai\n.️";
+            return "Before we start, mujhe bataye ki aap kya seekhna chahte hai taaki mei aapka account ready kar saku \n";
         }
         return "";
     }

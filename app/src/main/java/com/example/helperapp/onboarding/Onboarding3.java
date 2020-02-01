@@ -13,6 +13,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.helperapp.R;
+import com.example.helperapp.utils.SharedPrefUtil;
 
 public class Onboarding3 extends AppCompatActivity {
 
@@ -29,6 +30,7 @@ public class Onboarding3 extends AppCompatActivity {
         tv2 = findViewById(R.id.tv2);
         tv3 = findViewById(R.id.tv3);
 
+        SharedPrefUtil.savePref(Onboarding3.this, "gotoOnb3", "true");
 
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
 
@@ -54,6 +56,7 @@ public class Onboarding3 extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(Onboarding3.this, Onboarding4.class);
                 startActivity(intent);
+                finish();
             }
         });
     }

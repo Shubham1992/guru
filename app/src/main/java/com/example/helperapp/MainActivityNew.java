@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -21,7 +22,10 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.helperapp.onboarding.AccountInfoAfterQuiz;
+import com.example.helperapp.onboarding.NotEnoughSelected;
 import com.example.helperapp.onboarding.Onboarding1;
+import com.example.helperapp.onboarding.Onboarding3;
 import com.example.helperapp.utils.AppHelper;
 import com.example.helperapp.utils.SharedPrefUtil;
 import com.google.firebase.database.DataSnapshot;
@@ -66,6 +70,12 @@ public class MainActivityNew extends AppCompatActivity {
         TextView textView = (TextView) findViewById(R.id.tvMain);
         textView.setTypeface(face);
 
+
+        DisplayMetrics metrics = getResources().getDisplayMetrics();
+
+        Log.e("metrics", "" + metrics.densityDpi);
+
+
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
 
         DatabaseReference myRef = database.getReference("featured_app_list");
@@ -86,8 +96,6 @@ public class MainActivityNew extends AppCompatActivity {
         });
 
         DatabaseReference myRefApplist = database.getReference("usecase_list");
-
-
         myRefApplist.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -95,6 +103,25 @@ public class MainActivityNew extends AppCompatActivity {
                 };
                 ArrayList<Object> value = dataSnapshot.getValue(genericTypeIndicator);
                 Log.d("tag", "Value is: " + value);
+                //AppHelper.AllappModels = value;
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
+        DatabaseReference all_apps_ref = database.getReference("all_aps");
+        all_apps_ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                GenericTypeIndicator<ArrayList<Object>> genericTypeIndicator = new GenericTypeIndicator<ArrayList<Object>>() {
+                };
+                ArrayList<Object> value = dataSnapshot.getValue(genericTypeIndicator);
+                Log.d("tag", "Value is: " + value);
+                AppHelper.AllappModels = value;
             }
 
             @Override
@@ -105,8 +132,6 @@ public class MainActivityNew extends AppCompatActivity {
 
 
         DatabaseReference myRefAppStrings = database.getReference("strings");
-
-
         myRefAppStrings.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -143,7 +168,28 @@ public class MainActivityNew extends AppCompatActivity {
                     AppHelper.userAppList = value;
 
                     SharedPrefUtil.savePref(MainActivityNew.this, "phone", phoneNumber.getText().toString());
-                    Intent intent = new Intent(MainActivityNew.this, Onboarding1.class);
+                    Intent intent = null;
+
+
+                    if (SharedPrefUtil.getPref(MainActivityNew.this, "gotoOnb3").equalsIgnoreCase("true")) {
+                        intent = new Intent(MainActivityNew.this, Onboarding3.class);
+                        startActivity(intent);
+                        finish();
+                        return;
+                    }
+
+
+                    if (SharedPrefUtil.getPref(MainActivityNew.this, "gotoaccountPage").equalsIgnoreCase("true") &&
+                            (SharedPrefUtil.getPref(MainActivityNew.this, "totalCountSelected") != null)) {
+                        if (Integer.parseInt(SharedPrefUtil.getPref(MainActivityNew.this, "totalCountSelected")) >= 3) {
+                            intent = new Intent(MainActivityNew.this, AccountInfoAfterQuiz.class);
+                        } else {
+                            intent = new Intent(MainActivityNew.this, NotEnoughSelected.class);
+                        }
+                    } else {
+
+                        intent = new Intent(MainActivityNew.this, Onboarding1.class);
+                    }
                     startActivity(intent);
                     finish();
 

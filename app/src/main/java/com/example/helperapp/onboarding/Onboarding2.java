@@ -8,7 +8,10 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 
-import com.example.helperapp.MainActivityNew;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.helperapp.R;
 import com.example.helperapp.adapters.FeaturedAppListAdapter;
 import com.example.helperapp.models.AppModel;
@@ -16,10 +19,6 @@ import com.example.helperapp.utils.AppHelper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 public class Onboarding2 extends AppCompatActivity {
 
@@ -62,6 +61,7 @@ public class Onboarding2 extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(Onboarding2.this, Onboarding3.class);
                 startActivity(intent);
+                finish();
             }
         });
     }

@@ -51,7 +51,7 @@ public class QuizActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quiz);
         Window window = getWindow();
-
+        AppHelper.selectedappModels = new ArrayList<>();
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
 
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
@@ -111,6 +111,8 @@ public class QuizActivity extends AppCompatActivity {
                 JSONObject jsonObject = new JSONObject();
                 try {
                     jsonObject.put("name", featuredListAppModels.get(countProgress - 1).getName());
+                    jsonObject.put("description", featuredListAppModels.get(countProgress - 1).getDescription());
+                    jsonObject.put("image", featuredListAppModels.get(countProgress - 1).getIcon());
                     AppHelper.selectedappModels.add(featuredListAppModels.get(countProgress - 1));
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -166,7 +168,13 @@ public class QuizActivity extends AppCompatActivity {
         myRefAppStrings.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Intent intent = new Intent(QuizActivity.this, AccountInfoAfterQuiz.class);
+                Intent intent = null;
+                SharedPrefUtil.savePref(QuizActivity.this, "totalCountSelected", "" + AppHelper.selectedappModels.size());
+                if (AppHelper.selectedappModels.size() < 3)
+                    intent = new Intent(QuizActivity.this, NotEnoughSelected.class);
+                else {
+                    intent = new Intent(QuizActivity.this, AccountInfoAfterQuiz.class);
+                }
                 startActivity(intent);
                 finish();
             }
@@ -176,5 +184,11 @@ public class QuizActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        //super.onBackPressed();
+
     }
 }

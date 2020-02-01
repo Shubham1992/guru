@@ -49,6 +49,7 @@ public class Onboarding6 extends AppCompatActivity {
                                         QuizActivity.class);
 
                                 startActivity(intent);
+                                finish();
 
                             }
                         }, 1000);

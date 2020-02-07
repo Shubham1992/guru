@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ffffff"
+    android:id="@+id/mainContainer">
+
+    <LinearLayout
+        android:layout_gravity="bottom"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:background="#ffffff"
+        android:orientation="vertical"
+        tools:context=".MainSearchActivity">
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@android:drawable/ic_delete"
+            android:tint="#000"
+            android:layout_gravity="right"
+            android:id="@+id/closeWindow"/>
+
+
+
+        <TextView
+            android:layout_marginBottom="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:layout_gravity="center"
+            android:textColor="#000"
+            android:gravity="center"
+            android:text="आप क्या सीखना चाहते हैं?"></TextView>
+
+        <ImageView
+            android:id="@+id/record"
+            android:layout_margin="20dp"
+            android:layout_gravity="center"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/microphone"/>
+
+
+        <TextView
+            android:id="@+id/recorded_text"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="20dp"
+            android:padding="10dp"
+            android:text="अपनी समस्या बोलकर बताएं..."
+            android:textColor="#000"></TextView>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvWorkflowSuggestions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <EditText
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:background="#f3f3f3"
+            android:hint="Type your problem here"
+            android:padding="15dp">
+
+            <requestFocus />
+        </EditText>
+
+        <Button
+            android:visibility="gone"
+            android:id="@+id/phoneNumberSave"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:height="20dp"
+            android:background="#f3f3f3"
+            android:gravity="left|center"
+            android:padding="10dp"
+            android:text="फ़ोन नंबर सेव करे" />
+    </LinearLayout>
+
+</FrameLayout>

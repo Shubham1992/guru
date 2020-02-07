@@ -8,12 +8,14 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -39,6 +41,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Locale;
 
 public class MainActivityNew extends AppCompatActivity {
 
@@ -46,6 +49,7 @@ public class MainActivityNew extends AppCompatActivity {
     private ImageView nextBtn;
     private EditText phoneNumber;
     private AlertDialog alertDialog;
+    private Button textRead;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +62,20 @@ public class MainActivityNew extends AppCompatActivity {
         final ProgressDialog progressDialog = new ProgressDialog(MainActivityNew.this);
         progressDialog.setMessage("Loading...");
         progressDialog.setCancelable(true);
+
+        textRead = findViewById(R.id.textRead);
+        textRead.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.package.address");
+                if (launchIntent != null) {
+                    startActivity(launchIntent);//null pointer check in case package name was not found
+                }
+            }
+        });
+
+
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
 
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);

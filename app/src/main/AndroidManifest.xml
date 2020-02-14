@@ -3,7 +3,10 @@
     package="com.example.helperapp">
 
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" /> <!-- Foreground Service permission(API level 28 or higher) -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <application
         android:allowBackup="true"
@@ -62,7 +65,7 @@
         <service
             android:name=".service.CustomFloatingViewService"
             android:exported="false" />
-        <service android:name=".accessibilityservice.MyAccessibilityService"
+        <service android:name=".service.MyAccessibilityService"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
             android:label="@string/accessibility_service_label">
             <intent-filter>

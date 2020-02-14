@@ -49,7 +49,7 @@ public class MyAccessibilityService extends AccessibilityService {
 
             textNodeInfo.getBoundsInScreen(rect);
 
-            Log.e(event.getClassName().toString(), "The TextView Node: " + rect.left + " " + rect.top + "  " + event);
+            Log.e(event.getClassName() == null ? "" : event.getClassName().toString(), "The TextView Node: " + rect.left + " " + rect.top + "  " + event);
         }
 
         MessageEvent messageEvent = new MessageEvent();

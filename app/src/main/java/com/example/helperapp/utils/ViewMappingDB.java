@@ -6,8 +6,10 @@ import java.util.HashMap;
 
 public class ViewMappingDB {
     public static HashMap<String, Rect> uberMap = new HashMap<>();
+    public static HashMap<String, Rect> googleMapsMap = new HashMap<>();
     public static String currentApp = "";
     public static String UBER_DRIVER = "uber_driver";
     public static String WHATSAPP = "whatsapp";
 
+    final public static String GOOGLEMAPS = "GOOOGLEMAPS";
 }

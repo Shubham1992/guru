@@ -1,13 +1,20 @@
 package com.example.helperapp;
 
+import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.ProgressDialog;
+import android.app.Service;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.speech.tts.TextToSpeech;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -23,11 +30,14 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.example.helperapp.onboarding.AccountInfoAfterQuiz;
 import com.example.helperapp.onboarding.NotEnoughSelected;
 import com.example.helperapp.onboarding.Onboarding1;
 import com.example.helperapp.onboarding.Onboarding3;
+import com.example.helperapp.service.ChatHeadService;
+import com.example.helperapp.service.CustomFloatingViewService;
 import com.example.helperapp.utils.AppHelper;
 import com.example.helperapp.utils.SharedPrefUtil;
 import com.google.firebase.database.DataSnapshot;
@@ -43,6 +53,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 
+import floatingview.FloatingViewManager;
+
 public class MainActivityNew extends AppCompatActivity {
 
     JSONObject jsonObject = new JSONObject();
@@ -50,6 +62,9 @@ public class MainActivityNew extends AppCompatActivity {
     private EditText phoneNumber;
     private AlertDialog alertDialog;
     private Button textRead;
+    private static final int CHATHEAD_OVERLAY_PERMISSION_REQUEST_CODE = 100;
+
+    private static final int CUSTOM_OVERLAY_PERMISSION_REQUEST_CODE = 101;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,12 +83,28 @@ public class MainActivityNew extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.package.address");
+                Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.google.android.apps.maps");
                 if (launchIntent != null) {
                     startActivity(launchIntent);//null pointer check in case package name was not found
                 }
+                showFloatingView(MainActivityNew.this, true, false);
+
+
             }
         });
+
+        // create default notification channel
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            final String channelId = getString(R.string.default_floatingview_channel_id);
+            final String channelName = getString(R.string.default_floatingview_channel_name);
+            final NotificationChannel defaultChannel = new NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_MIN);
+            final NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            if (manager != null) {
+                manager.createNotificationChannel(defaultChannel);
+            }
+        }
+
+
 
 
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
@@ -268,6 +299,52 @@ public class MainActivityNew extends AppCompatActivity {
         });
 
 
+    }
+
+    private void showFloatingView(Context context, boolean isShowOverlayPermission, boolean isCustomFloatingView) {
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
+            startFloatingViewService(MainActivityNew.this, isCustomFloatingView);
+            return;
+        }
+
+        if (Settings.canDrawOverlays(context)) {
+            startFloatingViewService(MainActivityNew.this, isCustomFloatingView);
+            return;
+        }
+
+        if (isShowOverlayPermission) {
+            final Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + context.getPackageName()));
+            startActivityForResult(intent, isCustomFloatingView ? CUSTOM_OVERLAY_PERMISSION_REQUEST_CODE : CHATHEAD_OVERLAY_PERMISSION_REQUEST_CODE);
+        }
+    }
+
+
+    private static void startFloatingViewService(Activity activity, boolean isCustomFloatingView) {
+        // *** You must follow these rules when obtain the cutout(FloatingViewManager.findCutoutSafeArea) ***
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            // 1. 'windowLayoutInDisplayCutoutMode' do not be set to 'never'
+            if (activity.getWindow().getAttributes().layoutInDisplayCutoutMode == WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER) {
+                throw new RuntimeException("'windowLayoutInDisplayCutoutMode' do not be set to 'never'");
+            }
+            // 2. Do not set Activity to landscape
+            if (activity.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                throw new RuntimeException("Do not set Activity to landscape");
+            }
+        }
+
+        // launch service
+        final Class<? extends Service> service;
+        final String key;
+        if (isCustomFloatingView) {
+            service = CustomFloatingViewService.class;
+            key = CustomFloatingViewService.EXTRA_CUTOUT_SAFE_AREA;
+        } else {
+            service = ChatHeadService.class;
+            key = ChatHeadService.EXTRA_CUTOUT_SAFE_AREA;
+        }
+        final Intent intent = new Intent(activity, service);
+        intent.putExtra(key, FloatingViewManager.findCutoutSafeArea(activity));
+        ContextCompat.startForegroundService(activity, intent);
     }
 
     @Override

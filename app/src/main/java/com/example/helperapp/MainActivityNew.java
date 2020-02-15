@@ -14,6 +14,7 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.Settings;
 import android.speech.tts.TextToSpeech;
 import android.util.DisplayMetrics;
@@ -39,6 +40,8 @@ import com.example.helperapp.onboarding.Onboarding3;
 import com.example.helperapp.service.ChatHeadService;
 import com.example.helperapp.service.CustomFloatingViewService;
 import com.example.helperapp.utils.AppHelper;
+import com.example.helperapp.utils.Constants;
+import com.example.helperapp.utils.NotifyEvents;
 import com.example.helperapp.utils.SharedPrefUtil;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -47,6 +50,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 
+import org.greenrobot.eventbus.EventBus;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -345,6 +349,14 @@ public class MainActivityNew extends AppCompatActivity {
         final Intent intent = new Intent(activity, service);
         intent.putExtra(key, FloatingViewManager.findCutoutSafeArea(activity));
         ContextCompat.startForegroundService(activity, intent);
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                EventBus.getDefault().post(new NotifyEvents(Constants.STARTWORKFLOW));
+
+            }
+        }, 2000);
     }
 
     @Override

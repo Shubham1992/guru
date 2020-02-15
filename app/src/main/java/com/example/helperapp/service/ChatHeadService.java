@@ -47,6 +47,7 @@ import com.example.helperapp.customviews.CustomImageView;
 import com.example.helperapp.customviews.CustomView;
 import com.example.helperapp.models.WorkflowDB;
 import com.example.helperapp.models.WorkflowSuggestionModel;
+import com.example.helperapp.utils.Constants;
 import com.example.helperapp.utils.MessageEvent;
 import com.example.helperapp.utils.NotifyEvents;
 import com.example.helperapp.utils.ViewMappingDB;
@@ -225,6 +226,7 @@ public class ChatHeadService extends Service implements FloatingViewListener, Re
     public static int getScreenWidth() {
         return Resources.getSystem().getDisplayMetrics().widthPixels;
     }
+
     public static float getDensity() {
         return Resources.getSystem().getDisplayMetrics().density;
     }
@@ -531,25 +533,25 @@ public class ChatHeadService extends Service implements FloatingViewListener, Re
         mView = new MyLoadView(ChatHeadService.this);
 
         //very first screen cordinates
-        if (ViewMappingDB.currentApp.equals(ViewMappingDB.UBER_DRIVER) && workflow.getWorkflowName().equals("Start Uber promotions workflow")) {
-            x_whatsapp_screen_1 = ViewMappingDB.uberMap.get("com.ubercab.driver:id/profile_entry_icon").left + 50;
-            y_whatsapp_screen_1 = ViewMappingDB.uberMap.get("com.ubercab.driver:id/profile_entry_icon").top;
-
-        } else if (ViewMappingDB.currentApp.equals(ViewMappingDB.UBER_DRIVER) && workflow.getWorkflowName().equals("Start Quests promotions workflow")) {
-            currentShape = "square";
-            rect = ViewMappingDB.uberMap.get("com.ubercab.driver:id/ub__tracker_entry_content_view");
-            rect.top = rect.top - 70;
-            rect.bottom = rect.bottom - 70;
-            x_whatsapp_screen_1 = ViewMappingDB.uberMap.get("com.ubercab.driver:id/ub__tracker_entry_content_view").left + 50;
-            y_whatsapp_screen_1 = ViewMappingDB.uberMap.get("com.ubercab.driver:id/ub__tracker_entry_content_view").top;
-
-        } else if (ViewMappingDB.currentApp.equalsIgnoreCase(ViewMappingDB.GOOGLEMAPS)) {
+//        if (ViewMappingDB.currentApp.equals(ViewMappingDB.UBER_DRIVER) && workflow.getWorkflowName().equals("Start Uber promotions workflow")) {
+//            x_whatsapp_screen_1 = ViewMappingDB.uberMap.get("com.ubercab.driver:id/profile_entry_icon").left + 50;
+//            y_whatsapp_screen_1 = ViewMappingDB.uberMap.get("com.ubercab.driver:id/profile_entry_icon").top;
+//
+//        } else if (ViewMappingDB.currentApp.equals(ViewMappingDB.UBER_DRIVER) && workflow.getWorkflowName().equals("Start Quests promotions workflow")) {
+//            currentShape = "square";
+//            rect = ViewMappingDB.uberMap.get("com.ubercab.driver:id/ub__tracker_entry_content_view");
+//            rect.top = rect.top - 70;
+//            rect.bottom = rect.bottom - 70;
+//            x_whatsapp_screen_1 = ViewMappingDB.uberMap.get("com.ubercab.driver:id/ub__tracker_entry_content_view").left + 50;
+//            y_whatsapp_screen_1 = ViewMappingDB.uberMap.get("com.ubercab.driver:id/ub__tracker_entry_content_view").top;
+//
+//        } else if (ViewMappingDB.currentApp.equalsIgnoreCase(ViewMappingDB.GOOGLEMAPS)) {
             workFlowStarted = true;
             x_whatsapp_screen_1 = ViewMappingDB.googleMapsMap.get("com.google.android.apps.maps:id/search_omnibox_one_google_account_disc").left - getScreenWidth() / 24;
             y_whatsapp_screen_1 = ViewMappingDB.googleMapsMap.get("com.google.android.apps.maps:id/search_omnibox_one_google_account_disc").top - getScreenWidth() / 24;
             radiusOfCircle = getScreenWidth() / 12;
             ttobj.speak("माइक बटन प्रेस करें और जहां जाना है उस जगह का नाम बोलें", TextToSpeech.QUEUE_FLUSH, null);
-        }
+        //}
 
         Log.e("height", "" + getScreenHeight());
         final LayoutInflater inflater = LayoutInflater.from(this);
@@ -690,6 +692,7 @@ public class ChatHeadService extends Service implements FloatingViewListener, Re
                             && event.getEvent().getContentDescription().toString().contains("Open account menu"))) {
                 removeAllViews();
             } else if ((event.getEvent().getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED)
+                    && event.getEvent().getClassName().toString().equalsIgnoreCase("android.widget.RelativeLayout")
                     && (event.getEvent().getText().size() > 0)) {
                 if (workFlowStarted)
                     createMapThirdPageViewForNavigation();
@@ -708,6 +711,9 @@ public class ChatHeadService extends Service implements FloatingViewListener, Re
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(NotifyEvents event) {
         Log.e("event in eventbus", event.getEventName());
+        if (event.getEventName().equalsIgnoreCase(Constants.STARTWORKFLOW)) {
+            startWorkflow(new WorkflowSuggestionModel(""));
+        }
     }
 
     public AccessibilityNodeInfo findChildNodes(AccessibilityNodeInfo nodeInfo) {

@@ -50,6 +50,11 @@ import android.view.WindowManager;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 
+import com.example.helperapp.utils.Constants;
+import com.example.helperapp.utils.NotifyEvents;
+
+import org.greenrobot.eventbus.EventBus;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.ref.WeakReference;
@@ -551,7 +556,7 @@ class FloatingView extends FrameLayout implements ViewTreeObserver.OnPreDrawList
         mParams.x = mInitX;
         mParams.y = mInitY;
 
-        // 画面端に移動しない場合は指定座標に移動
+        // Move to specified coordinates if not moved to screen edge
         if (mMoveDirection == FloatingViewManager.MOVE_DIRECTION_NONE) {
             moveTo(mInitX, mInitY, mInitX, mInitY, false);
         } else {
@@ -857,6 +862,9 @@ class FloatingView extends FrameLayout implements ViewTreeObserver.OnPreDrawList
         // 移動
         else if (action == MotionEvent.ACTION_MOVE) {
             // 移動判定の場合は長押しの解除
+
+            EventBus.getDefault().post(new NotifyEvents(Constants.REMOVEGURUMESSAGE));
+
             if (mIsMoveAccept) {
                 mIsLongPressed = false;
                 mLongPressHandler.removeMessages(LongPressHandler.LONG_PRESSED);

@@ -14,9 +14,7 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.provider.Settings;
-import android.speech.tts.TextToSpeech;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
@@ -39,9 +37,8 @@ import com.example.helperapp.onboarding.Onboarding1;
 import com.example.helperapp.onboarding.Onboarding3;
 import com.example.helperapp.service.ChatHeadService;
 import com.example.helperapp.service.CustomFloatingViewService;
+import com.example.helperapp.service.MyAccessibilityService;
 import com.example.helperapp.utils.AppHelper;
-import com.example.helperapp.utils.Constants;
-import com.example.helperapp.utils.NotifyEvents;
 import com.example.helperapp.utils.SharedPrefUtil;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -50,14 +47,14 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 
-import org.greenrobot.eventbus.EventBus;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Locale;
 
 import floatingview.FloatingViewManager;
+
+import static com.example.helperapp.service.ChatHeadService.isAccessibilityServiceEnabled;
 
 public class MainActivityNew extends AppCompatActivity {
 
@@ -87,6 +84,15 @@ public class MainActivityNew extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
+                boolean enabled = isAccessibilityServiceEnabled(MainActivityNew.this, MyAccessibilityService.class);
+                if (!enabled) {
+                    Intent intent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                    Toast.makeText(MainActivityNew.this, "Accessibility not enabled", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.google.android.apps.maps");
                 if (launchIntent != null) {
                     startActivity(launchIntent);//null pointer check in case package name was not found
@@ -107,8 +113,6 @@ public class MainActivityNew extends AppCompatActivity {
                 manager.createNotificationChannel(defaultChannel);
             }
         }
-
-
 
 
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
@@ -350,13 +354,14 @@ public class MainActivityNew extends AppCompatActivity {
         intent.putExtra(key, FloatingViewManager.findCutoutSafeArea(activity));
         ContextCompat.startForegroundService(activity, intent);
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                EventBus.getDefault().post(new NotifyEvents(Constants.STARTWORKFLOW));
-
-            }
-        }, 2000);
+        // this code starts workflow as soon as you launch google app from our app
+//        new Handler().postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                EventBus.getDefault().post(new NotifyEvents(Constants.STARTWORKFLOW));
+//
+//            }
+//        }, 2000);
     }
 
     @Override

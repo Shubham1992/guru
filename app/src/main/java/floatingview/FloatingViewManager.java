@@ -58,7 +58,7 @@ public class FloatingViewManager implements ScreenChangedListener, View.OnTouchL
     public static final int DISPLAY_MODE_HIDE_ALWAYS = 2;
 
     /**
-     * フルスクリーン時に非表示にするモード
+     * Mode to hide when full screen
      */
     public static final int DISPLAY_MODE_HIDE_FULLSCREEN = 3;
 
@@ -231,7 +231,7 @@ public class FloatingViewManager implements ScreenChangedListener, View.OnTouchL
     }
 
     /**
-     * 画面がフルスクリーンになった場合はViewを非表示にします。
+     * Hides the view when the screen is full screen.
      */
     @Override
     public void onScreenChanged(Rect windowRect, int visibility) {
@@ -653,7 +653,7 @@ public class FloatingViewManager implements ScreenChangedListener, View.OnTouchL
         public int floatingViewX;
 
         /**
-         * 画面左下を原点とするFloatingViewのY座標
+         * Y coordinate of FloatingView with origin at bottom left of screen
          */
         public int floatingViewY;
 
@@ -694,7 +694,7 @@ public class FloatingViewManager implements ScreenChangedListener, View.OnTouchL
             floatingViewY = FloatingView.DEFAULT_Y;
             floatingViewWidth = FloatingView.DEFAULT_WIDTH;
             floatingViewHeight = FloatingView.DEFAULT_HEIGHT;
-            moveDirection = MOVE_DIRECTION_DEFAULT;
+            moveDirection = MOVE_DIRECTION_LEFT;
             usePhysics = true;
             animateInitialMove = true;
         }

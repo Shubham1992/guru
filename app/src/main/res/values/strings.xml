@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">Guru</string>
     <string name="title_activity_not_enough_selected">NotEnoughSelected</string>
-    <string name="chathead_content_title">Demo Chat: Active</string>
-    <string name="content_text">Demo running.</string>
+    <string name="chathead_content_title">Guru: Active</string>
+    <string name="content_text">Guru running.</string>
     <string name="mail_content_title">Demo Customize: active</string>
     <string name="chathead_click_message">Click</string>
     <string name="delete_demo">Delete Demo</string>

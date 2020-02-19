@@ -33,7 +33,8 @@ chalana seekhe"
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="30dp">
+        android:layout_margin="30dp"
+        android:visibility="gone">
 
 
         <EditText
@@ -100,5 +101,10 @@ chalana seekhe"
         android:id="@+id/textRead"
         android:layout_width="wrap_content"
         android:layout_height="45dp"
-        android:text="Start to learn  Maps" />
+        android:layout_gravity="center"
+        android:background="@drawable/btn_green_round_corner"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:text="Start to learn  Maps"
+        android:textColor="@color/white" />
 </LinearLayout>

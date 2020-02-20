@@ -380,5 +380,10 @@ public class MainActivityNew extends AppCompatActivity {
             alertDialog = builder.create();
             alertDialog.show();
         }
+
+        if (isAccessibilityServiceEnabled(MainActivityNew.this, MyAccessibilityService.class)) {
+            showFloatingView(MainActivityNew.this, true, false);
+        }
+
     }
 }

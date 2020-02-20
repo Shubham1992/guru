@@ -130,7 +130,8 @@ public class ChatHeadService extends Service implements FloatingViewListener, Re
     private boolean startedAppFormLauncher = false;
     private boolean guruMessageActive = false;
     private View containerView;
-
+    private String currentAppLaunchedFromLauncher = "";
+    CustomImageView iconView;
 
     /**
      * {@inheritDoc}
@@ -146,7 +147,7 @@ public class ChatHeadService extends Service implements FloatingViewListener, Re
         final WindowManager windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
         windowManager.getDefaultDisplay().getMetrics(metrics);
         final LayoutInflater inflater = LayoutInflater.from(this);
-        final CustomImageView iconView = (CustomImageView) inflater.inflate(R.layout.widget_chathead, null, false);
+        iconView = (CustomImageView) inflater.inflate(R.layout.widget_chathead, null, false);
         iconView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -185,6 +186,7 @@ public class ChatHeadService extends Service implements FloatingViewListener, Re
         mFloatingViewManager.setSafeInsetRect((Rect) intent.getParcelableExtra(EXTRA_CUTOUT_SAFE_AREA));
         final FloatingViewManager.Options options = new FloatingViewManager.Options();
         options.overMargin = (int) (16 * metrics.density);
+        mFloatingViewManager.setTrashViewEnabled(false);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             iconView.setZ(10f);
         }
@@ -208,8 +210,14 @@ public class ChatHeadService extends Service implements FloatingViewListener, Re
         //starting workflow as soon as icon is clicked because we do not need to get user input owf which workflow to start
 
         if (startedAppFormLauncher) {
-            appLaunchedFromLauncherFirstScreen();
-            startedAppFormLauncher = false;
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    appLaunchedFromLauncherFirstScreen();
+                    startedAppFormLauncher = false;
+                }
+            }, 2000);
+
         } else startWorkflow(new WorkflowSuggestionModel(""));
 
         mView = new MyLoadView(ChatHeadService.this);
@@ -624,7 +632,18 @@ public class ChatHeadService extends Service implements FloatingViewListener, Re
 
         LayoutInflater inflater1 = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
         View v = inflater1.inflate(R.layout.guru_message_popup, null, true);
+        TextView textView = v.findViewById(R.id.text);
+        if (currentAppLaunchedFromLauncher.equalsIgnoreCase(Constants.WHATSAPP)) {
+            textView.setText("Namaste! \uD83D\uDE4F\n" +
+                    "Whatsapp mei kahi bhi kuch bhi confusion ho to mujhse pooche!");
+        } else if (currentAppLaunchedFromLauncher.equalsIgnoreCase(Constants.YOUTUBE)) {
+            textView.setText("Namaste! \uD83D\uDE4F\n" +
+                    "YouTube mei kahi bhi kuch bhi confusion ho to mujhse pooche!");
+        } else {
+            textView.setText("Namaste! \uD83D\uDE4F\n" +
+                    "Google maps mei kahi bhi kuch bhi confusion ho to mujhse pooche!");
 
+        }
 
         frameLayout = containerView.findViewById(R.id.mainContainer);
         frameLayout.addView(v);
@@ -686,6 +705,7 @@ public class ChatHeadService extends Service implements FloatingViewListener, Re
         }
 
         if (event.getEvent().getPackageName().equals("com.whatsapp")) {
+            iconView.setVisibility(View.VISIBLE);
             ViewMappingDB.currentApp = ViewMappingDB.WHATSAPP;
             if (event.getEvent().getEventType() == AccessibilityEvent.TYPE_VIEW_CLICKED
                     && event.getEvent().getContentDescription() != null
@@ -708,6 +728,7 @@ public class ChatHeadService extends Service implements FloatingViewListener, Re
                 createWhatsappPage5();
             }
         } else if (event.getEvent().getPackageName().equals("com.ubercab.driver")) {
+            iconView.setVisibility(View.VISIBLE);
 
             if (event.getAccessibilityNodeInfo() != null) {
                 Rect rect = new Rect();
@@ -745,6 +766,8 @@ public class ChatHeadService extends Service implements FloatingViewListener, Re
                 createUberQuestSwipePage2RTL();
             }
         } else if (event.getEvent().getPackageName().equals("com.google.android.apps.maps")) {
+            iconView.setVisibility(View.VISIBLE);
+
             ViewMappingDB.currentApp = ViewMappingDB.GOOGLEMAPS;
             // save all views' rect on screen to a hashmap to access positions later
             if (event.getAccessibilityNodeInfo() != null) {
@@ -791,17 +814,32 @@ public class ChatHeadService extends Service implements FloatingViewListener, Re
                     && (event.getEvent().getText().size() > 0 && event.getEvent().getText().get(0).toString().contains("Allow Google to record audio"))) {
                 createPermissionAllowView();
             }
+        } else {
+            if (event.getEvent().getPackageName().equals(packegeLauncherName)) {
+                iconView.setVisibility(View.GONE);
+            }
+
         }
 
 
+        // When some other app is launched from launcher then this code will work
         Log.e("Package Name:", packegeLauncherName);
 
         if (event.getEvent().getPackageName().equals(packegeLauncherName)) {
             if ((event.getEvent().getEventType() == AccessibilityEvent.TYPE_VIEW_CLICKED)
                     && (event.getEvent().getText().size() > 0 && event.getEvent().getText().get(0).toString().equalsIgnoreCase("Maps"))) {
                 createMapLandedView();
+            } else if ((event.getEvent().getEventType() == AccessibilityEvent.TYPE_VIEW_CLICKED)
+                    && (event.getEvent().getText().size() > 0 && event.getEvent().getText().get(0).toString().equalsIgnoreCase("WhatsApp"))) {
+                currentAppLaunchedFromLauncher = Constants.WHATSAPP;
+                createAppLandedView(Constants.WHATSAPP);
+            } else if ((event.getEvent().getEventType() == AccessibilityEvent.TYPE_VIEW_CLICKED)
+                    && (event.getEvent().getText().size() > 0 && event.getEvent().getText().get(0).toString().equalsIgnoreCase("YouTube"))) {
+                currentAppLaunchedFromLauncher = Constants.YOUTUBE;
+                createAppLandedView(Constants.YOUTUBE);
             }
         }
+
     }
 
     String getMainLauncherPackageName() {
@@ -1020,6 +1058,7 @@ public class ChatHeadService extends Service implements FloatingViewListener, Re
 
     }
 
+    // <--------------------------------------------------------Google maps workflows------------------------------------------------------------------------>
     void createMapMicPage() {
         if (frameLayout != null)
             frameLayout.removeAllViews();
@@ -1032,21 +1071,12 @@ public class ChatHeadService extends Service implements FloatingViewListener, Re
         CustomView v = new CustomView(ChatHeadService.this);
         currentView = v;
 
-        TextView textView = getTextView("माइक बटन प्रेस करें और जहां जाना है उस जगह का नाम बोलें");
+        TextView textView = getTextView("Mic button press karein aur jaha jaana hai us jagah ka naam bole");
 
         if (frameLayout != null)
             addViewsToFrameLayout(v, textView);
     }
 
-
-    TextView getTextView(String text) {
-        TextView textView = new TextView(ChatHeadService.this);
-        textView.setText(text);
-        textView.setTextColor(getResources().getColor(R.color.white));
-        textView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        textView.setGravity(Gravity.CENTER);
-        return textView;
-    }
 
     // user is speaking, do not show any view
     void createMapSecondPageViewForNavigation() {
@@ -1055,11 +1085,6 @@ public class ChatHeadService extends Service implements FloatingViewListener, Re
 
     }
 
-    void removeAllViews() {
-        if (frameLayout != null)
-            frameLayout.removeAllViews();
-
-    }
 
     // view to press start button
     void createMapThirdPageViewForNavigation() {
@@ -1069,7 +1094,7 @@ public class ChatHeadService extends Service implements FloatingViewListener, Re
             createInitialFrameLayout();
             createMapThirdPageViewForNavigation();
         }
-        ttobj.speak("गुड जॉब। आपकी लोकेशन अवेलेबल है। किलिक इस्टार्ट टू नेविगेट।", TextToSpeech.QUEUE_FLUSH, null);
+        ttobj.speak("स्टार्ट दबाकर डायरेक्शन देखें।", TextToSpeech.QUEUE_FLUSH, null);
         workFlowStarted = false;
 
         new Handler().postDelayed(new Runnable() {
@@ -1080,7 +1105,7 @@ public class ChatHeadService extends Service implements FloatingViewListener, Re
                 y_whatsapp_screen_1 = ((rect == null) || (rect.top > getScreenHeight())) ? (getScreenHeight() - getScreenHeight() / 20) :
                         ViewMappingDB.googleMapsMap.get("com.google.android.apps.maps:id/commute_tab_strip_button").top - getScreenHeight() / 20;
                 radiusOfCircle = getScreenHeight() / 18;
-                TextView textView = getTextView("गुड जॉब। आपकी लोकेशन अवेलेबल है। किलिक इस्टार्ट टू नेविगेट।");
+                TextView textView = getTextView("Start button dabakar directions dekhe");
 
                 CustomView v = new CustomView(ChatHeadService.this);
                 currentView = v;
@@ -1094,27 +1119,15 @@ public class ChatHeadService extends Service implements FloatingViewListener, Re
 
 
     void createMapPageAfterStartClicked() {
+
+
         if (frameLayout != null)
             frameLayout.removeAllViews();
         ttobj.speak("नेविगेट करने के लिए गूगल की डाइरेक्शंस फॉलो करें।", TextToSpeech.QUEUE_FLUSH, null);
 
-    }
-
-    void createPermissionAllowView() {
-        if (frameLayout != null)
-            frameLayout.removeAllViews();
-
-        x_whatsapp_screen_1 = getScreenWidth() / 2;
-        y_whatsapp_screen_1 = getScreenHeight() / 2;
-        radiusOfCircle = getScreenHeight() / 17;
-
-
-        CustomView v = new CustomView(ChatHeadService.this);
-        currentView = v;
-        if (frameLayout != null)
-            frameLayout.addView(v);
 
     }
+
 
     private void createGoogleMapsPAgeForStartNavigation() {
         createMapThirdPageViewForNavigation();
@@ -1157,10 +1170,14 @@ public class ChatHeadService extends Service implements FloatingViewListener, Re
             frameLayout.removeAllViews();
 
         startedAppFormLauncher = true;
+        currentAppLaunchedFromLauncher = "";
         Log.e("map", "google map launched");
         createWindow();
 
     }
+
+    // <--------------------------------------------------------Google maps workflows------------------------------------------------------------------------>
+
 
     private void removeViewsFromFrameLayout() {
         if (frameLayout != null) {
@@ -1173,5 +1190,49 @@ public class ChatHeadService extends Service implements FloatingViewListener, Re
             frameLayout.addView(v[i]);
 
         }
+    }
+
+    TextView getTextView(String text) {
+        TextView textView = new TextView(ChatHeadService.this);
+        textView.setText(text);
+        textView.setTextSize(24);
+        textView.setTextColor(getResources().getColor(R.color.white));
+        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams((int) (250 * getDensity()), ViewGroup.LayoutParams.WRAP_CONTENT);
+        layoutParams.gravity = Gravity.CENTER;
+        textView.setLayoutParams(layoutParams);
+        textView.setGravity(Gravity.CENTER);
+        return textView;
+    }
+
+    void createPermissionAllowView() {
+        if (frameLayout != null)
+            frameLayout.removeAllViews();
+
+        x_whatsapp_screen_1 = getScreenWidth() / 2;
+        y_whatsapp_screen_1 = getScreenHeight() / 2;
+        radiusOfCircle = getScreenHeight() / 17;
+
+
+        CustomView v = new CustomView(ChatHeadService.this);
+        currentView = v;
+        if (frameLayout != null)
+            frameLayout.addView(v);
+
+    }
+
+    void removeAllViews() {
+        if (frameLayout != null)
+            frameLayout.removeAllViews();
+
+    }
+
+    private void createAppLandedView(String appname) {
+        if (frameLayout != null)
+            frameLayout.removeAllViews();
+
+        startedAppFormLauncher = true;
+        Log.e("map", "app launched");
+        createWindow();
+
     }
 }

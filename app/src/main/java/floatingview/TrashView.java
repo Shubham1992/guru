@@ -502,7 +502,7 @@ class TrashView extends FrameLayout implements ViewTreeObserver.OnPreDrawListene
      *
      * @param enabled trueの場合は有効（表示）、falseの場合は無効（非表示）
      */
-    void setTrashEnabled(boolean enabled) {
+    public void setTrashEnabled(boolean enabled) {
         // 設定が同じ場合は何もしない
         if (mIsEnabled == enabled) {
             return;

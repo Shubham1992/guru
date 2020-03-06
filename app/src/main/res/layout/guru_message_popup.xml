@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="vertical">
@@ -8,7 +8,7 @@
         android:id="@+id/text"
         android:layout_width="250dp"
         android:layout_height="150dp"
-        android:layout_marginLeft="70dp"
+        android:layout_marginLeft="80dp"
         android:layout_marginTop="50dp"
         android:background="@drawable/combined_shape_left"
         android:gravity="center"
@@ -20,4 +20,13 @@ Google maps mei kahi bhi kuch bhi confusion ho to mujhse pooche!"
         android:textColor="@color/white"
         android:textSize="16sp"
         android:textStyle="bold" />
-</LinearLayout>
+
+    <ImageView
+        android:id="@+id/close"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_gravity="right"
+        android:layout_marginTop="75dp"
+        android:padding="10dp"
+        android:src="@drawable/close_x" />
+</FrameLayout>

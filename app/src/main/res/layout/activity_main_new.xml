@@ -105,6 +105,6 @@ chalana seekhe"
         android:background="@drawable/btn_green_round_corner"
         android:paddingLeft="20dp"
         android:paddingRight="20dp"
-        android:text="Start to learn  Maps"
+        android:text="Start to learn"
         android:textColor="@color/white" />
 </LinearLayout>

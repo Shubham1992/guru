@@ -4,4 +4,4 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:padding="8dp"
-    android:src="@drawable/guru_2_small" />
+    android:src="@drawable/group_2" />

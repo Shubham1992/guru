@@ -23,10 +23,6 @@ import android.content.res.Resources;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import androidx.annotation.DrawableRes;
-import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.core.view.ViewCompat;
 import android.util.DisplayMetrics;
 import android.view.DisplayCutout;
 import android.view.HapticFeedbackConstants;
@@ -35,6 +31,12 @@ import android.view.View;
 import android.view.WindowInsets;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
+
+import androidx.annotation.DrawableRes;
+import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
+
+import com.example.helperapp.service.ChatHeadService;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -701,4 +703,7 @@ public class FloatingViewManager implements ScreenChangedListener, View.OnTouchL
 
     }
 
+    public void moveTo(ChatHeadService context) {
+        mTargetFloatingView.moveTo(0, 0, -10, ChatHeadService.getScreenHeight(), false);
+    }
 }

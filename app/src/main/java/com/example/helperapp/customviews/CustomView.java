@@ -3,6 +3,7 @@ package com.example.helperapp.customviews;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.DashPathEffect;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
@@ -69,6 +70,27 @@ public class CustomView extends View {
             } else {
                 canvas.drawCircle(x, y, radius, mPaint);
             }
+
+            Paint mPaintLine = new Paint(Paint.ANTI_ALIAS_FLAG);
+            mPaintLine.setColor(Color.WHITE);
+            mPaintLine.setAntiAlias(true);
+            mPaintLine.setStyle(Paint.Style.STROKE);
+            mPaintLine.setStrokeWidth(3);
+            mPaintLine.setPathEffect(new DashPathEffect(new float[]{10, 20}, 0));
+
+            float startY = y;
+            float stopY = ChatHeadService.getScreenHeight() / 2;
+            // y is below half of screen
+            if (y > ChatHeadService.getScreenHeight() / 2) {
+                startY = y - radius;
+                stopY = stopY + (30 * ChatHeadService.getDensity());
+            } else {
+                startY = y + radius;
+                stopY = stopY - (30 * ChatHeadService.getDensity());
+
+            }
+
+            canvas.drawLine(x, startY, x, stopY, mPaintLine);
 
         }
     }

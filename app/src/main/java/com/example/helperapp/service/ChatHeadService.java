@@ -43,6 +43,7 @@ import androidx.core.app.NotificationCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.helperapp.DialogActivity;
 import com.example.helperapp.R;
 import com.example.helperapp.adapters.WorkflowSuggestionAdapter;
 import com.example.helperapp.customviews.CustomImageView;
@@ -65,6 +66,8 @@ import java.util.Locale;
 import floatingview.FloatingViewListener;
 import floatingview.FloatingViewManager;
 import pl.droidsonroids.gif.GifImageView;
+
+import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
 
 /**
@@ -132,12 +135,14 @@ public class ChatHeadService extends Service implements FloatingViewListener, Re
     private View containerView;
     private String currentAppLaunchedFromLauncher = "";
     CustomImageView iconView;
+    private FloatingViewManager.Options options;
+    private boolean workflowRequestedbyUser = false;
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
+    public int onStartCommand(final Intent intent, int flags, int startId) {
         // 既にManagerが存在していたら何もしない
         if (mFloatingViewManager != null) {
             return START_STICKY;
@@ -151,6 +156,11 @@ public class ChatHeadService extends Service implements FloatingViewListener, Re
         iconView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+//                Intent intent1 = new Intent(ChatHeadService.this, DialogActivity.class);
+//                intent1.setFlags(FLAG_ACTIVITY_NEW_TASK);
+//                startActivity(intent1);
+
+
                 Log.d(TAG, getString(R.string.chathead_click_message));
                 if (frameLayout != null)
                     frameLayout.removeAllViews();
@@ -163,19 +173,12 @@ public class ChatHeadService extends Service implements FloatingViewListener, Re
                     Toast.makeText(ChatHeadService.this, "Accessibility not enabled", Toast.LENGTH_SHORT).show();
                     return;
                 }
-
+                workflowRequestedbyUser = true;
                 createWindow();
             }
         });
 
-        ttobj = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
-            @Override
-            public void onInit(int status) {
-            }
-        });
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            ttobj.setLanguage(Locale.forLanguageTag("hin"));
-        }
+        setupTextToSpeech();
 
         packegeLauncherName = getMainLauncherPackageName();
 
@@ -184,9 +187,8 @@ public class ChatHeadService extends Service implements FloatingViewListener, Re
         mFloatingViewManager.setFixedTrashIconImage(R.drawable.ic_trash_fixed);
         mFloatingViewManager.setActionTrashIconImage(R.drawable.ic_trash_action);
         mFloatingViewManager.setSafeInsetRect((Rect) intent.getParcelableExtra(EXTRA_CUTOUT_SAFE_AREA));
-        final FloatingViewManager.Options options = new FloatingViewManager.Options();
+        options = new FloatingViewManager.Options();
         options.overMargin = (int) (16 * metrics.density);
-        mFloatingViewManager.setTrashViewEnabled(false);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             iconView.setZ(10f);
         }
@@ -198,6 +200,17 @@ public class ChatHeadService extends Service implements FloatingViewListener, Re
         EventBus.getDefault().register(this);
 
         return START_REDELIVER_INTENT;
+    }
+
+    private void setupTextToSpeech() {
+        ttobj = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+            }
+        });
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            ttobj.setLanguage(Locale.forLanguageTag("hin"));
+        }
     }
 
 
@@ -586,7 +599,11 @@ public class ChatHeadService extends Service implements FloatingViewListener, Re
                 currentView = v;
                 mWindowManager.addView(containerView, mParams);
                 currentShape = "circle";
-                createMapMicPage();
+                if (ViewMappingDB.currentApp.equalsIgnoreCase(Constants.GOOGLEMAPS)) {
+                    createMapMicPage();
+                } else if (ViewMappingDB.currentApp.equalsIgnoreCase(Constants.YOUTUBE)) {
+                    createYoutubeFirstPage();
+                }
             }
         });
 
@@ -596,6 +613,12 @@ public class ChatHeadService extends Service implements FloatingViewListener, Re
                 mWindowManager.removeView(containerView);
             }
         });
+        TextView tvTitle = v.findViewById(R.id.tvTitle);
+        TextView tvFirstflow = v.findViewById(R.id.tvFirstflow);
+        if (currentAppLaunchedFromLauncher.equalsIgnoreCase(Constants.YOUTUBE)) {
+            tvTitle.setText("Youtube pe aap kya karna chahte hai?");
+            tvFirstflow.setText("Apni pasand ki video search karein");
+        }
 
         //}
 
@@ -619,6 +642,7 @@ public class ChatHeadService extends Service implements FloatingViewListener, Re
         currentShape = "circle";
     }
 
+
     void appLaunchedFromLauncherFirstScreen() {
         if (mWindowManager != null)
             ;//mWindowManager.removeView(mainView);
@@ -633,17 +657,26 @@ public class ChatHeadService extends Service implements FloatingViewListener, Re
         LayoutInflater inflater1 = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
         View v = inflater1.inflate(R.layout.guru_message_popup, null, true);
         TextView textView = v.findViewById(R.id.text);
+        ImageView imgClose = v.findViewById(R.id.close);
         if (currentAppLaunchedFromLauncher.equalsIgnoreCase(Constants.WHATSAPP)) {
             textView.setText("Namaste! \uD83D\uDE4F\n" +
                     "Whatsapp mei kahi bhi kuch bhi confusion ho to mujhse pooche!");
         } else if (currentAppLaunchedFromLauncher.equalsIgnoreCase(Constants.YOUTUBE)) {
             textView.setText("Namaste! \uD83D\uDE4F\n" +
                     "YouTube mei kahi bhi kuch bhi confusion ho to mujhse pooche!");
-        } else {
+        } else if (currentAppLaunchedFromLauncher.equalsIgnoreCase(Constants.GOOGLEMAPS)) {
             textView.setText("Namaste! \uD83D\uDE4F\n" +
                     "Google maps mei kahi bhi kuch bhi confusion ho to mujhse pooche!");
-
+        } else {
+            textView.setText("Namaste! \uD83D\uDE4F\n" +
+                    "Is app mei kahi bhi kuch bhi confusion ho to mujhse pooche!");
         }
+        imgClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                removeAllViews();
+            }
+        });
 
         frameLayout = containerView.findViewById(R.id.mainContainer);
         frameLayout.addView(v);
@@ -651,12 +684,12 @@ public class ChatHeadService extends Service implements FloatingViewListener, Re
         //showGif();
 
         mParams = new WindowManager.LayoutParams(
-                WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT, 10, 10,
+                WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT, 10, 10,
                 WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
                 PixelFormat.TRANSLUCENT);
 
-        mParams.gravity = Gravity.CENTER;
+        mParams.gravity = Gravity.TOP | Gravity.LEFT;
         currentView = v;
         mWindowManager.addView(containerView, mParams);
         currentShape = "circle";
@@ -686,6 +719,7 @@ public class ChatHeadService extends Service implements FloatingViewListener, Re
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(MessageEvent event) {
+
         Log.e("event", event.getEvent().toString());
 
         try {
@@ -705,7 +739,7 @@ public class ChatHeadService extends Service implements FloatingViewListener, Re
         }
 
         if (event.getEvent().getPackageName().equals("com.whatsapp")) {
-            iconView.setVisibility(View.VISIBLE);
+            setIconVisibility(View.VISIBLE);
             ViewMappingDB.currentApp = ViewMappingDB.WHATSAPP;
             if (event.getEvent().getEventType() == AccessibilityEvent.TYPE_VIEW_CLICKED
                     && event.getEvent().getContentDescription() != null
@@ -728,7 +762,7 @@ public class ChatHeadService extends Service implements FloatingViewListener, Re
                 createWhatsappPage5();
             }
         } else if (event.getEvent().getPackageName().equals("com.ubercab.driver")) {
-            iconView.setVisibility(View.VISIBLE);
+            setIconVisibility(View.VISIBLE);
 
             if (event.getAccessibilityNodeInfo() != null) {
                 Rect rect = new Rect();
@@ -766,7 +800,8 @@ public class ChatHeadService extends Service implements FloatingViewListener, Re
                 createUberQuestSwipePage2RTL();
             }
         } else if (event.getEvent().getPackageName().equals("com.google.android.apps.maps")) {
-            iconView.setVisibility(View.VISIBLE);
+
+            setIconVisibility(View.VISIBLE);
 
             ViewMappingDB.currentApp = ViewMappingDB.GOOGLEMAPS;
             // save all views' rect on screen to a hashmap to access positions later
@@ -777,8 +812,34 @@ public class ChatHeadService extends Service implements FloatingViewListener, Re
                 if (event.getAccessibilityNodeInfo().getViewIdResourceName() != null)
                     Log.e("data in message event", event.getAccessibilityNodeInfo().getViewIdResourceName() + " " + rect.left + " " + rect.top);
 
-                System.out.println("map data " + ViewMappingDB.googleMapsMap);
+                System.out.println("map data " + ViewMappingDB.vieWHashMap);
             }
+
+            //TODO: create a generic method for flow start and pass flow parameters to it
+            if (!workflowRequestedbyUser) {
+                return;
+            }
+
+//            if ((event.getEvent().getEventType() == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED)) {
+//                AccessibilityNodeInfo nodeInfo = event.getEvent().getSource();
+//                if (nodeInfo == null) {
+//                    return;
+//                }
+//
+//                List<AccessibilityNodeInfo> list = nodeInfo
+//                        .findAccessibilityNodeInfosByViewId("com.google.android.apps.maps:id/search_omnibox_edit_text");
+//                for (AccessibilityNodeInfo node : list) {
+//                    Log.i(TAG, "ACC::onAccessibilityEvent: left_button " + node);
+//                    if (node.getText().toString().equalsIgnoreCase("android"))
+//                        continue;
+//                    Bundle arguments = new Bundle();
+//                    arguments.putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, "android");
+//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//                        node.performAction(AccessibilityNodeInfo.AccessibilityAction.ACTION_SET_TEXT.getId(), arguments);
+//                    }
+//
+//                }
+//            }
 
             if ((event.getEvent().getEventType() == AccessibilityEvent.TYPE_VIEW_CLICKED)
                     && (event.getEvent().getText().size() > 0 && event.getEvent().getText().get(0).toString().equalsIgnoreCase("Voice search"))) {
@@ -803,6 +864,8 @@ public class ChatHeadService extends Service implements FloatingViewListener, Re
             } else if ((event.getEvent().getEventType() == AccessibilityEvent.TYPE_VIEW_CLICKED)
                     && (event.getEvent().getText().size() > 0 && event.getEvent().getText().get(0).toString().equalsIgnoreCase("Start"))) {
                 createMapPageAfterStartClicked();
+            } else if ((event.getEvent().getEventType() == AccessibilityEvent.TYPE_VIEW_CLICKED)) {
+                removeAllViews();
             } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 if ((event.getEvent().getEventType() == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) &&
                         (event.getEvent().getContentChangeTypes() == 7)) {
@@ -814,9 +877,45 @@ public class ChatHeadService extends Service implements FloatingViewListener, Re
                     && (event.getEvent().getText().size() > 0 && event.getEvent().getText().get(0).toString().contains("Allow Google to record audio"))) {
                 createPermissionAllowView();
             }
+        } else if (event.getEvent().getPackageName().equals("com.google.android.youtube")) {
+            iconView.setVisibility(View.VISIBLE);
+
+
+            ViewMappingDB.currentApp = ViewMappingDB.YOUTUBE;
+            // save all views' rect on screen to a hashmap to access positions later
+            if (event.getAccessibilityNodeInfo() != null) {
+                Rect rect = new Rect();
+                event.getAccessibilityNodeInfo().getBoundsInScreen(rect);
+                AccessibilityNodeInfo accessibilityNodeInfo = findChildNodes(event.getAccessibilityNodeInfo());
+                if (event.getAccessibilityNodeInfo().getViewIdResourceName() != null)
+                    Log.e("data in message event", event.getAccessibilityNodeInfo().getViewIdResourceName() + " " + rect.left + " " + rect.top);
+
+            }
+
+            if ((event.getEvent().getEventType() == AccessibilityEvent.TYPE_VIEW_CLICKED)
+                    && (event.getEvent().getText().size() > 0 && event.getEvent().getText().get(0).toString().equalsIgnoreCase("Search"))) {
+                workFlowStarted = true;
+
+
+                createYoutubeSearchPressed();
+            }
+            if ((event.getEvent().getEventType() == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED)) {
+                AccessibilityNodeInfo nodeInfo = event.getEvent().getSource();
+                if (nodeInfo == null) {
+                    return;
+                }
+
+                List<AccessibilityNodeInfo> list = nodeInfo
+                        .findAccessibilityNodeInfosByViewId("com.google.android.youtube:id/voice_search");
+                for (AccessibilityNodeInfo node : list) {
+                    Log.i(TAG, "ACC::onAccessibilityEvent: left_button " + node);
+                    node.performAction(AccessibilityNodeInfo.ACTION_CLICK);
+                }
+            }
         } else {
             if (event.getEvent().getPackageName().equals(packegeLauncherName)) {
                 iconView.setVisibility(View.GONE);
+                workflowRequestedbyUser = false;
             }
 
         }
@@ -828,6 +927,7 @@ public class ChatHeadService extends Service implements FloatingViewListener, Re
         if (event.getEvent().getPackageName().equals(packegeLauncherName)) {
             if ((event.getEvent().getEventType() == AccessibilityEvent.TYPE_VIEW_CLICKED)
                     && (event.getEvent().getText().size() > 0 && event.getEvent().getText().get(0).toString().equalsIgnoreCase("Maps"))) {
+                currentAppLaunchedFromLauncher = Constants.GOOGLEMAPS;
                 createMapLandedView();
             } else if ((event.getEvent().getEventType() == AccessibilityEvent.TYPE_VIEW_CLICKED)
                     && (event.getEvent().getText().size() > 0 && event.getEvent().getText().get(0).toString().equalsIgnoreCase("WhatsApp"))) {
@@ -837,8 +937,30 @@ public class ChatHeadService extends Service implements FloatingViewListener, Re
                     && (event.getEvent().getText().size() > 0 && event.getEvent().getText().get(0).toString().equalsIgnoreCase("YouTube"))) {
                 currentAppLaunchedFromLauncher = Constants.YOUTUBE;
                 createAppLandedView(Constants.YOUTUBE);
+            } else if ((event.getEvent().getEventType() == AccessibilityEvent.TYPE_VIEW_CLICKED)
+                    && (event.getEvent().getText().size() > 0 && event.getEvent().getText().get(0).toString().equalsIgnoreCase("Ola"))) {
+                currentAppLaunchedFromLauncher = Constants.OLA;
+                createAppLandedView(Constants.OLA);
+            } else if ((event.getEvent().getEventType() == AccessibilityEvent.TYPE_VIEW_CLICKED)
+                    && (event.getEvent().getText().size() > 0 && event.getEvent().getText().get(0).toString().equalsIgnoreCase("Uber"))) {
+                currentAppLaunchedFromLauncher = Constants.UBER;
+                createAppLandedView(Constants.UBER);
+            } else if ((event.getEvent().getEventType() == AccessibilityEvent.TYPE_VIEW_CLICKED)
+                    && (event.getEvent().getText().size() > 0 && event.getEvent().getText().get(0).toString().equalsIgnoreCase("Swiggy"))) {
+                currentAppLaunchedFromLauncher = Constants.SWIGGY;
+                createAppLandedView(Constants.SWIGGY);
+            } else if ((event.getEvent().getEventType() == AccessibilityEvent.TYPE_VIEW_CLICKED)
+                    && (event.getEvent().getText().size() > 0 && event.getEvent().getText().get(0).toString().equalsIgnoreCase("Zomato"))) {
+                currentAppLaunchedFromLauncher = Constants.ZOMATO;
+                createAppLandedView(Constants.ZOMATO);
             }
         }
+
+    }
+
+    private void setIconVisibility(int visibility) {
+        mFloatingViewManager.moveTo(ChatHeadService.this);
+        iconView.setVisibility(visibility);
 
     }
 
@@ -890,9 +1012,14 @@ public class ChatHeadService extends Service implements FloatingViewListener, Re
                     ViewMappingDB.uberMap.put(nodeInfo.getViewIdResourceName() + "_" + nodeInfo.getText(), rect);
                 }
             } else if (nodeInfo.getPackageName().toString().equalsIgnoreCase("com.google.android.apps.maps")) {
-                ViewMappingDB.googleMapsMap.put(nodeInfo.getViewIdResourceName(), rect);
+                ViewMappingDB.vieWHashMap.put(nodeInfo.getViewIdResourceName(), rect);
                 if (nodeInfo.getText() != null) {
-                    ViewMappingDB.googleMapsMap.put(nodeInfo.getViewIdResourceName() + "_" + nodeInfo.getText(), rect);
+                    ViewMappingDB.vieWHashMap.put(nodeInfo.getViewIdResourceName() + "_" + nodeInfo.getText(), rect);
+                }
+            } else if (nodeInfo.getPackageName().toString().equalsIgnoreCase("com.google.android.youtube")) {
+                ViewMappingDB.vieWHashMap.put(nodeInfo.getViewIdResourceName(), rect);
+                if (nodeInfo.getText() != null) {
+                    ViewMappingDB.vieWHashMap.put(nodeInfo.getViewIdResourceName() + "_" + nodeInfo.getText(), rect);
                 }
             }
         }
@@ -1063,8 +1190,8 @@ public class ChatHeadService extends Service implements FloatingViewListener, Re
         if (frameLayout != null)
             frameLayout.removeAllViews();
         workFlowStarted = true;
-        x_whatsapp_screen_1 = ViewMappingDB.googleMapsMap.get("com.google.android.apps.maps:id/search_omnibox_one_google_account_disc").left - getScreenWidth() / 24;
-        y_whatsapp_screen_1 = ViewMappingDB.googleMapsMap.get("com.google.android.apps.maps:id/search_omnibox_one_google_account_disc").top - getScreenWidth() / 24;
+        x_whatsapp_screen_1 = ViewMappingDB.vieWHashMap.get("com.google.android.apps.maps:id/search_omnibox_one_google_account_disc").left - getScreenWidth() / 24;
+        y_whatsapp_screen_1 = ViewMappingDB.vieWHashMap.get("com.google.android.apps.maps:id/search_omnibox_one_google_account_disc").top - getScreenWidth() / 24;
         radiusOfCircle = getScreenWidth() / 12;
         ttobj.speak("माइक बटन प्रेस करें और जहां जाना है उस जगह का नाम बोलें", TextToSpeech.QUEUE_FLUSH, null);
 
@@ -1100,10 +1227,10 @@ public class ChatHeadService extends Service implements FloatingViewListener, Re
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                Rect rect = ViewMappingDB.googleMapsMap.get("com.google.android.apps.maps:id/commute_tab_strip_button");
+                Rect rect = ViewMappingDB.vieWHashMap.get("com.google.android.apps.maps:id/commute_tab_strip_button");
                 x_whatsapp_screen_1 = (int) (200 * getDensity());//ViewMappingDB.googleMapsMap.get("com.google.android.apps.maps:id/commute_tab_strip_button").left;//getScreenWidth() / 2;
                 y_whatsapp_screen_1 = ((rect == null) || (rect.top > getScreenHeight())) ? (getScreenHeight() - getScreenHeight() / 20) :
-                        ViewMappingDB.googleMapsMap.get("com.google.android.apps.maps:id/commute_tab_strip_button").top - getScreenHeight() / 20;
+                        ViewMappingDB.vieWHashMap.get("com.google.android.apps.maps:id/commute_tab_strip_button").top - getScreenHeight() / 20;
                 radiusOfCircle = getScreenHeight() / 18;
                 TextView textView = getTextView("Start button dabakar directions dekhe");
 
@@ -1195,13 +1322,36 @@ public class ChatHeadService extends Service implements FloatingViewListener, Re
     TextView getTextView(String text) {
         TextView textView = new TextView(ChatHeadService.this);
         textView.setText(text);
-        textView.setTextSize(24);
+        textView.setTextSize(22);
+//        textView.setX(calculatexForTextView());
+//        textView.setY(calculateYForTextView());
         textView.setTextColor(getResources().getColor(R.color.white));
-        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams((int) (250 * getDensity()), ViewGroup.LayoutParams.WRAP_CONTENT);
+        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         layoutParams.gravity = Gravity.CENTER;
         textView.setLayoutParams(layoutParams);
         textView.setGravity(Gravity.CENTER);
         return textView;
+    }
+
+
+    int calculatexForTextView() {
+        int x = 0;
+        if (x_whatsapp_screen_1 > getScreenWidth() / 2) {
+            x = x_whatsapp_screen_1 - (int) (250 * getDensity());
+        } else {
+            x = x_whatsapp_screen_1;
+        }
+        return x;
+    }
+
+    int calculateYForTextView() {
+        int y = 0;
+        if (y_whatsapp_screen_1 > getScreenHeight() / 2) {
+            y = y_whatsapp_screen_1 - (int) (250 * getDensity());
+        } else {
+            y = y_whatsapp_screen_1 + 100;
+        }
+        return y;
     }
 
     void createPermissionAllowView() {
@@ -1234,5 +1384,45 @@ public class ChatHeadService extends Service implements FloatingViewListener, Re
         Log.e("map", "app launched");
         createWindow();
 
+    }
+
+    //<<-----------------------------------------------------------YOUTUBE------------------------------------------------------------------->>
+    private void createYoutubeFirstPage() {
+
+        if (frameLayout != null)
+            frameLayout.removeAllViews();
+        workFlowStarted = true;
+        x_whatsapp_screen_1 = ViewMappingDB.vieWHashMap.get("com.google.android.youtube:id/mobile_topbar_avatar").left - getScreenWidth() / 24;
+        y_whatsapp_screen_1 = ViewMappingDB.vieWHashMap.get("com.google.android.youtube:id/mobile_topbar_avatar").top - getScreenWidth() / 24;
+        radiusOfCircle = getScreenWidth() / 12;
+        ttobj.speak("Videos or Songs dhoondne k liye Search button press karein", TextToSpeech.QUEUE_FLUSH, null);
+
+        CustomView v = new CustomView(ChatHeadService.this);
+        currentView = v;
+
+        TextView textView = getTextView("Videos or Songs dhoondne k liye Search button press karein");
+
+        if (frameLayout != null)
+            addViewsToFrameLayout(v, textView);
+
+    }
+
+    private void createYoutubeSearchPressed() {
+        if (frameLayout != null)
+            frameLayout.removeAllViews();
+        workFlowStarted = true;
+        x_whatsapp_screen_1 = getScreenWidth() - getScreenWidth() / 24;
+        y_whatsapp_screen_1 = ViewMappingDB.vieWHashMap.get("com.google.android.youtube:id/voice_search").top - getScreenWidth() / 24;
+        radiusOfCircle = getScreenWidth() / 12;
+
+        ttobj.speak("Ab mic button dabakar jo bhi aap dhundana chahte hai vo bole", TextToSpeech.QUEUE_FLUSH, null);
+
+        CustomView v = new CustomView(ChatHeadService.this);
+        currentView = v;
+
+        TextView textView = getTextView("Ab mic button dabakar jo bhi aap dhundana chahte hai vo bole");
+
+        if (frameLayout != null)
+            addViewsToFrameLayout(v, textView);
     }
 }

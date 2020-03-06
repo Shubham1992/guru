@@ -27,15 +27,6 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
-import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.core.view.ViewCompat;
-import androidx.dynamicanimation.animation.DynamicAnimation;
-import androidx.dynamicanimation.animation.FlingAnimation;
-import androidx.dynamicanimation.animation.FloatValueHolder;
-import androidx.dynamicanimation.animation.SpringAnimation;
-import androidx.dynamicanimation.animation.SpringForce;
-
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.KeyCharacterMap;
@@ -49,6 +40,15 @@ import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
+
+import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
+import androidx.core.view.ViewCompat;
+import androidx.dynamicanimation.animation.DynamicAnimation;
+import androidx.dynamicanimation.animation.FlingAnimation;
+import androidx.dynamicanimation.animation.FloatValueHolder;
+import androidx.dynamicanimation.animation.SpringAnimation;
+import androidx.dynamicanimation.animation.SpringForce;
 
 import com.example.helperapp.utils.Constants;
 import com.example.helperapp.utils.NotifyEvents;
@@ -508,7 +508,7 @@ class FloatingView extends FrameLayout implements ViewTreeObserver.OnPreDrawList
      * @param resName   dimension resource name
      * @return pixel size
      */
-    private static int getSystemUiDimensionPixelSize(Resources resources, String resName) {
+    public static int getSystemUiDimensionPixelSize(Resources resources, String resName) {
         int pixelSize = 0;
         final int resId = resources.getIdentifier(resName, "dimen", "android");
         if (resId > 0) {
@@ -538,7 +538,7 @@ class FloatingView extends FrameLayout implements ViewTreeObserver.OnPreDrawList
     }
 
     /**
-     * 初回描画時の座標設定を行います。
+     * Set the coordinates for the first drawing.
      */
     @Override
     public boolean onPreDraw() {
@@ -992,7 +992,7 @@ class FloatingView extends FrameLayout implements ViewTreeObserver.OnPreDrawList
      *
      * @param withAnimation アニメーションを行う場合はtrue.行わない場合はfalse
      */
-    private void moveToEdge(boolean withAnimation) {
+    public void moveToEdge(boolean withAnimation) {
         final int currentX = getXByTouch();
         final int currentY = getYByTouch();
         moveToEdge(currentX, currentY, withAnimation);
@@ -1005,7 +1005,7 @@ class FloatingView extends FrameLayout implements ViewTreeObserver.OnPreDrawList
      * @param startY        Y座標の初期値
      * @param withAnimation アニメーションを行う場合はtrue.行わない場合はfalse
      */
-    private void moveToEdge(int startX, int startY, boolean withAnimation) {
+    public void moveToEdge(int startX, int startY, boolean withAnimation) {
         // 指定座標に移動
         final int goalPositionX = getGoalPositionX(startX, startY);
         final int goalPositionY = getGoalPositionY(startX, startY);
@@ -1022,7 +1022,7 @@ class FloatingView extends FrameLayout implements ViewTreeObserver.OnPreDrawList
      * @param goalPositionY 移動先のY座標
      * @param withAnimation アニメーションを行う場合はtrue.行わない場合はfalse
      */
-    private void moveTo(int currentX, int currentY, int goalPositionX, int goalPositionY, boolean withAnimation) {
+    public void moveTo(int currentX, int currentY, int goalPositionX, int goalPositionY, boolean withAnimation) {
         // 画面端からはみ出さないように調整
         goalPositionX = Math.min(Math.max(mPositionLimitRect.left, goalPositionX), mPositionLimitRect.right);
         goalPositionY = Math.min(Math.max(mPositionLimitRect.top, goalPositionY), mPositionLimitRect.bottom);

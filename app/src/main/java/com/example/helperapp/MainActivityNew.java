@@ -6,6 +6,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.ProgressDialog;
 import android.app.Service;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -15,6 +16,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.speech.RecognizerIntent;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
@@ -51,6 +53,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Locale;
 
 import floatingview.FloatingViewManager;
 
@@ -64,6 +67,7 @@ public class MainActivityNew extends AppCompatActivity {
     private AlertDialog alertDialog;
     private Button textRead;
     private static final int CHATHEAD_OVERLAY_PERMISSION_REQUEST_CODE = 100;
+    private final int REQ_CODE_SPEECH_INPUT = 102;
 
     private static final int CUSTOM_OVERLAY_PERMISSION_REQUEST_CODE = 101;
 
@@ -83,6 +87,8 @@ public class MainActivityNew extends AppCompatActivity {
         textRead.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+
 
                 boolean enabled = isAccessibilityServiceEnabled(MainActivityNew.this, MyAccessibilityService.class);
                 if (!enabled) {
@@ -385,5 +391,40 @@ public class MainActivityNew extends AppCompatActivity {
             showFloatingView(MainActivityNew.this, true, false);
         }
 
+    }
+
+    private void promptSpeechInput() {
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT,
+                getString(R.string.speech_prompt));
+        try {
+            startActivityForResult(intent, REQ_CODE_SPEECH_INPUT);
+        } catch (ActivityNotFoundException a) {
+            Toast.makeText(getApplicationContext(),
+                    getString(R.string.speech_not_supported),
+                    Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (requestCode) {
+            case REQ_CODE_SPEECH_INPUT: {
+                if (resultCode == RESULT_OK && null != data) {
+
+                    ArrayList<String> result = data
+                            .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                    Log.e("text", result.get(0));
+                    //txtSpeechInput.setText(result.get(0));
+                }
+                break;
+            }
+
+        }
     }
 }

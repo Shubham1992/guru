@@ -43,7 +43,6 @@ import androidx.core.app.NotificationCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.helperapp.DialogActivity;
 import com.example.helperapp.R;
 import com.example.helperapp.adapters.WorkflowSuggestionAdapter;
 import com.example.helperapp.customviews.CustomImageView;
@@ -137,13 +136,13 @@ public class ChatHeadService extends Service implements FloatingViewListener, Re
     CustomImageView iconView;
     private FloatingViewManager.Options options;
     private boolean workflowRequestedbyUser = false;
+    private ArrayList<String> allTextsOnScreen = new ArrayList<>();
 
     /**
      * {@inheritDoc}
      */
     @Override
     public int onStartCommand(final Intent intent, int flags, int startId) {
-        // 既にManagerが存在していたら何もしない
         if (mFloatingViewManager != null) {
             return START_STICKY;
         }
@@ -168,7 +167,7 @@ public class ChatHeadService extends Service implements FloatingViewListener, Re
                 boolean enabled = isAccessibilityServiceEnabled(ChatHeadService.this, MyAccessibilityService.class);
                 if (!enabled) {
                     Intent intent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent.setFlags(FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
                     Toast.makeText(ChatHeadService.this, "Accessibility not enabled", Toast.LENGTH_SHORT).show();
                     return;
@@ -567,79 +566,85 @@ public class ChatHeadService extends Service implements FloatingViewListener, Re
         final LayoutInflater inflater = LayoutInflater.from(this);
         containerView = inflater.inflate(R.layout.workflow_suggestion_layout, null, false);
 
-        //very first screen cordinates
-//        if (ViewMappingDB.currentApp.equals(ViewMappingDB.UBER_DRIVER) && workflow.getWorkflowName().equals("Start Uber promotions workflow")) {
-//            x_whatsapp_screen_1 = ViewMappingDB.uberMap.get("com.ubercab.driver:id/profile_entry_icon").left + 50;
-//            y_whatsapp_screen_1 = ViewMappingDB.uberMap.get("com.ubercab.driver:id/profile_entry_icon").top;
-//
-//        } else if (ViewMappingDB.currentApp.equals(ViewMappingDB.UBER_DRIVER) && workflow.getWorkflowName().equals("Start Quests promotions workflow")) {
-//            currentShape = "square";
-//            rect = ViewMappingDB.uberMap.get("com.ubercab.driver:id/ub__tracker_entry_content_view");
-//            rect.top = rect.top - 70;
-//            rect.bottom = rect.bottom - 70;
-//            x_whatsapp_screen_1 = ViewMappingDB.uberMap.get("com.ubercab.driver:id/ub__tracker_entry_content_view").left + 50;
-//            y_whatsapp_screen_1 = ViewMappingDB.uberMap.get("com.ubercab.driver:id/ub__tracker_entry_content_view").top;
-//
-//        } else if (ViewMappingDB.currentApp.equalsIgnoreCase(ViewMappingDB.GOOGLEMAPS)) {
+        if (ViewMappingDB.currentApp.equalsIgnoreCase(Constants.PLAYSTORE)) {
+            frameLayout = containerView.findViewById(R.id.mainContainer);
+            createPlaystoreAppInstallPage();
 
-        LayoutInflater inflater1 = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-        View v = inflater1.inflate(R.layout.google_workflow_options_layout, null, true);
-        LinearLayout travelDirection = v.findViewById(R.id.travelDirection);
-        LinearLayout notInterested = v.findViewById(R.id.notInterested);
-        travelDirection.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mWindowManager.removeView(containerView);
-                mParams = new WindowManager.LayoutParams(
-                        WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT, 10, 10,
-                        WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-                        WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
-                        PixelFormat.TRANSLUCENT);
-                mParams.gravity = Gravity.CENTER;
-                currentView = v;
-                mWindowManager.addView(containerView, mParams);
-                currentShape = "circle";
-                if (ViewMappingDB.currentApp.equalsIgnoreCase(Constants.GOOGLEMAPS)) {
-                    createMapMicPage();
-                } else if (ViewMappingDB.currentApp.equalsIgnoreCase(Constants.YOUTUBE)) {
-                    createYoutubeFirstPage();
-                }
-            }
-        });
+            mParams = new WindowManager.LayoutParams(
+                    WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT, 10, 10,
+                    WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                    PixelFormat.TRANSLUCENT);
 
-        notInterested.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mWindowManager.removeView(containerView);
-            }
-        });
-        TextView tvTitle = v.findViewById(R.id.tvTitle);
-        TextView tvFirstflow = v.findViewById(R.id.tvFirstflow);
-        if (currentAppLaunchedFromLauncher.equalsIgnoreCase(Constants.YOUTUBE)) {
-            tvTitle.setText("Youtube pe aap kya karna chahte hai?");
-            tvFirstflow.setText("Apni pasand ki video search karein");
+        } else {
+
+            LayoutInflater inflater1 = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+            View v = inflater1.inflate(R.layout.chat_workflow_options_layout, null, true);
+            //LinearLayout travelDirection = v.findViewById(R.id.travelDirection);
+            //LinearLayout notInterested = v.findViewById(R.id.notInterested);
+//            travelDirection.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    mWindowManager.removeView(containerView);
+//                    mParams = new WindowManager.LayoutParams(
+//                            WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT, 10, 10,
+//                            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+//                            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+//                            PixelFormat.TRANSLUCENT);
+//                    mParams.gravity = Gravity.CENTER;
+//                    currentView = v;
+//                    mWindowManager.addView(containerView, mParams);
+//                    currentShape = "circle";
+//                    if (ViewMappingDB.currentApp.equalsIgnoreCase(Constants.GOOGLEMAPS)) {
+//                        createMapMicPage();
+//                    } else if (ViewMappingDB.currentApp.equalsIgnoreCase(Constants.YOUTUBE)) {
+//                        createYoutubeFirstPage();
+//                    } else if (ViewMappingDB.currentApp.equalsIgnoreCase(Constants.PAYTM)) {
+//                        createPaytmAddMoneyPage();
+//                    }
+//                }
+//            });
+//
+//            notInterested.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    mWindowManager.removeView(containerView);
+//                }
+//            });
+            //TextView tvTitle = v.findViewById(R.id.tvTitle);
+            //TextView tvFirstflow = v.findViewById(R.id.tvFirstflow);
+//            if (currentAppLaunchedFromLauncher.equalsIgnoreCase(Constants.YOUTUBE)) {
+//                tvTitle.setText("Youtube pe aap kya karna chahte hai?");
+//                tvFirstflow.setText("Apni pasand ki video search karein");
+//            }
+//            if (ViewMappingDB.currentApp.equalsIgnoreCase(Constants.PAYTM)) {
+//                tvTitle.setText("Paytm pe aap kya karna chahte hai?");
+//                tvFirstflow.setText("Paytm wallet me paise add karein");
+//            }
+
+
+            frameLayout = containerView.findViewById(R.id.mainContainer);
+            frameLayout.addView(v);
+            currentView = v;
+
+            mParams = new WindowManager.LayoutParams(
+                    WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT, 10, 10,
+                    WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+                    PixelFormat.TRANSLUCENT);
+
         }
 
         //}
 
-        // CustomView v = new CustomView(ChatHeadService.this);
-
-        frameLayout = containerView.findViewById(R.id.mainContainer);
-        frameLayout.addView(v);
 
         //showGif();
 
-        mParams = new WindowManager.LayoutParams(
-                WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT, 10, 10,
-                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-                PixelFormat.TRANSLUCENT);
 
         mParams.gravity = Gravity.CENTER;
-        currentView = v;
         mWindowManager.addView(containerView, mParams);
         guruMessageActive = false;
-        currentShape = "circle";
+        resetCurrentShape();
     }
 
 
@@ -667,6 +672,9 @@ public class ChatHeadService extends Service implements FloatingViewListener, Re
         } else if (currentAppLaunchedFromLauncher.equalsIgnoreCase(Constants.GOOGLEMAPS)) {
             textView.setText("Namaste! \uD83D\uDE4F\n" +
                     "Google maps mei kahi bhi kuch bhi confusion ho to mujhse pooche!");
+        } else if (currentAppLaunchedFromLauncher.equalsIgnoreCase(Constants.PAYTM)) {
+            textView.setText("Namaste! \uD83D\uDE4F\n" +
+                    "PAYTM app mei kahi bhi kuch bhi confusion ho to mujhse pooche!");
         } else {
             textView.setText("Namaste! \uD83D\uDE4F\n" +
                     "Is app mei kahi bhi kuch bhi confusion ho to mujhse pooche!");
@@ -692,7 +700,7 @@ public class ChatHeadService extends Service implements FloatingViewListener, Re
         mParams.gravity = Gravity.TOP | Gravity.LEFT;
         currentView = v;
         mWindowManager.addView(containerView, mParams);
-        currentShape = "circle";
+        resetCurrentShape();
         guruMessageActive = true;
     }
 
@@ -713,6 +721,20 @@ public class ChatHeadService extends Service implements FloatingViewListener, Re
 
 
         }
+        frameLayout.addView(gifImageView);
+
+    }
+
+    void showGif(int x, int y) {
+        gifImageView = new GifImageView(ChatHeadService.this);
+        gifImageView.setLayoutParams(new LinearLayout.LayoutParams(
+                gifAdjustment_x,
+                gifAdjustment_y));
+
+        gifImageView.setImageResource(R.drawable.finger_right);
+        gifImageView.setX(x);
+        gifImageView.setY(y);
+
         frameLayout.addView(gifImageView);
 
     }
@@ -739,28 +761,29 @@ public class ChatHeadService extends Service implements FloatingViewListener, Re
         }
 
         if (event.getEvent().getPackageName().equals("com.whatsapp")) {
-            setIconVisibility(View.VISIBLE);
-            ViewMappingDB.currentApp = ViewMappingDB.WHATSAPP;
-            if (event.getEvent().getEventType() == AccessibilityEvent.TYPE_VIEW_CLICKED
-                    && event.getEvent().getContentDescription() != null
-                    && event.getEvent().getContentDescription().toString().equals("More options")) {
-                createWhatsappPage2();
-            } else if (event.getEvent().getEventType() == AccessibilityEvent.TYPE_VIEW_CLICKED
-                    && event.getEvent().getContentDescription() != null
-                    && event.getEvent().getContentDescription().toString().equals("Location")) {
-                createGoogleMapsPAgeForStartNavigation();
-            } else if (event.getEvent().getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED
-                    && event.getEvent().getClassName() != null
-                    && event.getEvent().getClassName().equals("com.whatsapp.GroupMembersSelector")) {
-                createWhatsappPage3();
-            } else if (event.getEvent().getEventType() == AccessibilityEvent.TYPE_VIEW_CLICKED
-                    && event.getEvent().getContentDescription() != null
-                    && event.getEvent().getContentDescription().toString().equals("Search")) {
-                createWhatsappPage4();
-            } else if (event.getEvent().getEventType() == AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED
-                    && event.getEvent().getText() != null) {
-                createWhatsappPage5();
-            }
+            return;
+//            setIconVisibility(View.VISIBLE);
+//            ViewMappingDB.currentApp = ViewMappingDB.WHATSAPP;
+//            if (event.getEvent().getEventType() == AccessibilityEvent.TYPE_VIEW_CLICKED
+//                    && event.getEvent().getContentDescription() != null
+//                    && event.getEvent().getContentDescription().toString().equals("More options")) {
+//                createWhatsappPage2();
+//            } else if (event.getEvent().getEventType() == AccessibilityEvent.TYPE_VIEW_CLICKED
+//                    && event.getEvent().getContentDescription() != null
+//                    && event.getEvent().getContentDescription().toString().equals("Location")) {
+//                createGoogleMapsPAgeForStartNavigation();
+//            } else if (event.getEvent().getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED
+//                    && event.getEvent().getClassName() != null
+//                    && event.getEvent().getClassName().equals("com.whatsapp.GroupMembersSelector")) {
+//                createWhatsappPage3();
+//            } else if (event.getEvent().getEventType() == AccessibilityEvent.TYPE_VIEW_CLICKED
+//                    && event.getEvent().getContentDescription() != null
+//                    && event.getEvent().getContentDescription().toString().equals("Search")) {
+//                createWhatsappPage4();
+//            } else if (event.getEvent().getEventType() == AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED
+//                    && event.getEvent().getText() != null) {
+//                createWhatsappPage5();
+//            }
         } else if (event.getEvent().getPackageName().equals("com.ubercab.driver")) {
             setIconVisibility(View.VISIBLE);
 
@@ -819,6 +842,7 @@ public class ChatHeadService extends Service implements FloatingViewListener, Re
             if (!workflowRequestedbyUser) {
                 return;
             }
+            // Code to perform action on view
 
 //            if ((event.getEvent().getEventType() == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED)) {
 //                AccessibilityNodeInfo nodeInfo = event.getEvent().getSource();
@@ -873,9 +897,12 @@ public class ChatHeadService extends Service implements FloatingViewListener, Re
                 }
             }
         } else if (event.getEvent().getPackageName().equals("com.google.android.permissioncontroller")) {
-            if ((event.getEvent().getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED)
-                    && (event.getEvent().getText().size() > 0 && event.getEvent().getText().get(0).toString().contains("Allow Google to record audio"))) {
+            if ((event.getEvent().getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED)) {
+                //&& (event.getEvent().getText().size() > 0 && event.getEvent().getText().get(0).toString().contains("record audio"))) {
                 createPermissionAllowView();
+            } else if (event.getEvent().getEventType() == AccessibilityEvent.TYPE_VIEW_CLICKED
+                    && (event.getEvent().getText().size() > 0 && event.getEvent().getText().get(0).toString().equalsIgnoreCase("Allow"))) {
+
             }
         } else if (event.getEvent().getPackageName().equals("com.google.android.youtube")) {
             iconView.setVisibility(View.VISIBLE);
@@ -911,6 +938,97 @@ public class ChatHeadService extends Service implements FloatingViewListener, Re
                     Log.i(TAG, "ACC::onAccessibilityEvent: left_button " + node);
                     node.performAction(AccessibilityNodeInfo.ACTION_CLICK);
                 }
+            }
+        } else if (event.getEvent().getPackageName().equals("com.android.vending")) {
+            iconView.setVisibility(View.VISIBLE);
+            ViewMappingDB.currentApp = Constants.PLAYSTORE;
+            allTextsOnScreen = new ArrayList<>();
+            if (event.getAccessibilityNodeInfo() != null) {
+                Rect rect = new Rect();
+                event.getAccessibilityNodeInfo().getBoundsInScreen(rect);
+                AccessibilityNodeInfo accessibilityNodeInfo = findChildNodes(event.getAccessibilityNodeInfo());
+                if (event.getAccessibilityNodeInfo().getViewIdResourceName() != null)
+                    Log.e("data in message event", event.getAccessibilityNodeInfo().getViewIdResourceName() + " " + rect.left + " " + rect.top);
+            }
+
+            if ((event.getEvent().getEventType() == AccessibilityEvent.TYPE_VIEW_CLICKED) &&
+                    (event.getEvent().getText() != null
+                            && event.getEvent().getText().size() > 0
+                            && event.getEvent().getText().get(0).toString().equalsIgnoreCase("Install"))) {
+                removeAllViews();
+            } else if ((event.getEvent().getEventType() == AccessibilityEvent.TYPE_VIEW_CLICKED) &&
+                    (event.getEvent().getText() != null
+                            && event.getEvent().getText().size() > 0
+                            && event.getEvent().getText().get(0).toString().equalsIgnoreCase("Open"))) {
+                removeAllViews();
+            } else if ((event.getEvent().getEventType() == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED)) {
+                Log.e("", "installation complete");
+                for (int i = 0; i < allTextsOnScreen.size(); i++) {
+                    if (allTextsOnScreen.get(i).contains("100%")) {
+                        createPlaystoreAppInstallCompletePage();
+                    }
+                }
+            } else if ((event.getEvent().getEventType() == AccessibilityEvent.TYPE_VIEW_CLICKED)) {
+                removeAllViews();
+            } else if (event.getEvent().getEventType() == AccessibilityEvent.TYPE_VIEW_SCROLLED) {
+                removeAllViews();
+            }
+
+            //Todo: code for playstore app install page
+        } else if (event.getEvent().getPackageName().equals("in.org.npci.upiapp")) {
+            if ((event.getEvent().getEventType() == AccessibilityEvent.TYPE_ANNOUNCEMENT)
+                    && (event.getEvent().getText().size() > 0 && event.getEvent().getText().get(0).toString().equalsIgnoreCase("Permissions screen"))) {
+                createUPIPermissionScreen();
+            }
+
+        } else if (event.getEvent().getPackageName().equals("net.one97.paytm")) {
+            if (event.getAccessibilityNodeInfo() != null) {
+                AccessibilityNodeInfo accessibilityNodeInfo = event.getAccessibilityNodeInfo();
+                accessibilityNodeInfo.refresh();
+                Rect rect = new Rect();
+                event.getAccessibilityNodeInfo().getBoundsInScreen(rect);
+                accessibilityNodeInfo = findChildNodes(accessibilityNodeInfo);
+                if (event.getAccessibilityNodeInfo().getViewIdResourceName() != null)
+                    Log.e("data in message event", event.getAccessibilityNodeInfo().getViewIdResourceName() + " " + rect.left + " " + rect.top);
+            }
+            ViewMappingDB.currentApp = Constants.PAYTM;
+            if ((event.getEvent().getEventType() == AccessibilityEvent.TYPE_VIEW_CLICKED)
+                    && (event.getEvent().getSource() != null && event.getEvent().getSource().getViewIdResourceName() != null
+                    && event.getEvent().getSource().getViewIdResourceName().equalsIgnoreCase("net.one97.paytm:id/image_container_3"))) {
+                createPaytmAddMoneyPage2();
+            } else if ((event.getEvent().getEventType() == AccessibilityEvent.TYPE_VIEW_CLICKED) &&
+                    (event.getEvent().getText() != null
+                            && event.getEvent().getText().size() > 0
+                            && event.getEvent().getText().get(0).toString().contains("Paytm Wallet"))) {
+                createPaytmEnterMoneyPage2();
+            } else if ((event.getEvent().getEventType() == AccessibilityEvent.TYPE_VIEW_FOCUSED) &&
+                    (event.getEvent().getText() != null
+                            && event.getEvent().getText().size() > 0
+                            && event.getEvent().getText().get(0).toString().contains("Amount"))) {
+                createPaytmEnterMoneyPage3();
+            } else if ((event.getEvent().getEventType() == AccessibilityEvent.TYPE_VIEW_CLICKED) &&
+                    (event.getEvent().getText() != null
+                            && event.getEvent().getText().size() > 0
+                            && event.getEvent().getText().get(0).toString().contains("Proceed to Add Money"))) {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        createPaytmEnterMoneyPage4();
+
+                    }
+                }, 2000);
+
+            } else if ((event.getEvent().getEventType() == AccessibilityEvent.TYPE_VIEW_CLICKED) &&
+                    (event.getEvent().getText() != null
+                            && event.getEvent().getText().size() > 0
+                            && event.getEvent().getText().get(0).toString().contains("Debit Card"))) {
+                createPaytmEnterMoneyPageAddDebitCard();
+            } else if ((event.getEvent().getEventType() == AccessibilityEvent.TYPE_VIEW_FOCUSED)) {
+                removeAllViews();
+            } else if ((event.getEvent().getEventType() == AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED) &&
+                    (event.getEvent().getSource() != null && event.getEvent().getSource().getViewIdResourceName() != null
+                            && event.getEvent().getSource().getViewIdResourceName().equalsIgnoreCase("net.one97.paytm:id/etCardNumber"))) {
+                Log.e("card number", event.getEvent().getText().get(0).toString());
             }
         } else {
             if (event.getEvent().getPackageName().equals(packegeLauncherName)) {
@@ -958,6 +1076,7 @@ public class ChatHeadService extends Service implements FloatingViewListener, Re
 
     }
 
+
     private void setIconVisibility(int visibility) {
         mFloatingViewManager.moveTo(ChatHeadService.this);
         iconView.setVisibility(visibility);
@@ -983,9 +1102,19 @@ public class ChatHeadService extends Service implements FloatingViewListener, Re
     public void onMessageEvent(NotifyEvents event) {
         Log.e("event in eventbus", event.getEventName());
         if (event.getEventName().equalsIgnoreCase(Constants.STARTWORKFLOW)) {
-            startWorkflow(new WorkflowSuggestionModel(""));
+            currentAppLaunchedFromLauncher = Constants.PAYTM;
+            //startWorkflow(new WorkflowSuggestionModel(""));
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    appLaunchedFromLauncherFirstScreen();
+                    startedAppFormLauncher = false;
+                }
+            }, 2000);
         } else if (event.getEventName().equalsIgnoreCase(Constants.REMOVEGURUMESSAGE)) {
             removeAllViews();
+        } else if (event.getEventName().equalsIgnoreCase(Constants.VOICEINPUTCOMPLETE)) {
+            Log.e("extra data->", event.getExtraData());
         }
     }
 
@@ -995,8 +1124,6 @@ public class ChatHeadService extends Service implements FloatingViewListener, Re
         //invalidate a node you're about to work on, or when a parents child will suddenly be gone!
         //Not doing this safety check is very dangerous!
         if (nodeInfo == null) return null;
-
-
         //Log.e("node name", nodeInfo.toString());
         if (nodeInfo.getViewIdResourceName() != null) {
             Rect rect = new Rect();
@@ -1004,12 +1131,15 @@ public class ChatHeadService extends Service implements FloatingViewListener, Re
             Log.e("bounds data", nodeInfo.getViewIdResourceName() + " " + rect.left + " " + rect.top);
             if (nodeInfo.getText() != null) {
                 Log.e("text data", nodeInfo.getText().toString() + " " + nodeInfo.getViewIdResourceName());
+
+                allTextsOnScreen.add(nodeInfo.getText().toString());
+
             }
 
             if (nodeInfo.getPackageName().toString().equalsIgnoreCase("com.ubercab.driver")) {
-                ViewMappingDB.uberMap.put(nodeInfo.getViewIdResourceName(), rect);
+                ViewMappingDB.vieWHashMap.put(nodeInfo.getViewIdResourceName(), rect);
                 if (nodeInfo.getText() != null) {
-                    ViewMappingDB.uberMap.put(nodeInfo.getViewIdResourceName() + "_" + nodeInfo.getText(), rect);
+                    ViewMappingDB.vieWHashMap.put(nodeInfo.getViewIdResourceName() + "_" + nodeInfo.getText(), rect);
                 }
             } else if (nodeInfo.getPackageName().toString().equalsIgnoreCase("com.google.android.apps.maps")) {
                 ViewMappingDB.vieWHashMap.put(nodeInfo.getViewIdResourceName(), rect);
@@ -1017,6 +1147,16 @@ public class ChatHeadService extends Service implements FloatingViewListener, Re
                     ViewMappingDB.vieWHashMap.put(nodeInfo.getViewIdResourceName() + "_" + nodeInfo.getText(), rect);
                 }
             } else if (nodeInfo.getPackageName().toString().equalsIgnoreCase("com.google.android.youtube")) {
+                ViewMappingDB.vieWHashMap.put(nodeInfo.getViewIdResourceName(), rect);
+                if (nodeInfo.getText() != null) {
+                    ViewMappingDB.vieWHashMap.put(nodeInfo.getViewIdResourceName() + "_" + nodeInfo.getText(), rect);
+                }
+            } else if (nodeInfo.getPackageName().toString().equalsIgnoreCase("com.android.vending")) {
+                ViewMappingDB.vieWHashMap.put(nodeInfo.getViewIdResourceName(), rect);
+                if (nodeInfo.getText() != null) {
+                    ViewMappingDB.vieWHashMap.put(nodeInfo.getViewIdResourceName() + "_" + nodeInfo.getText(), rect);
+                }
+            } else if (nodeInfo.getPackageName().toString().equalsIgnoreCase("net.one97.paytm")) {
                 ViewMappingDB.vieWHashMap.put(nodeInfo.getViewIdResourceName(), rect);
                 if (nodeInfo.getText() != null) {
                     ViewMappingDB.vieWHashMap.put(nodeInfo.getViewIdResourceName() + "_" + nodeInfo.getText(), rect);
@@ -1110,19 +1250,18 @@ public class ChatHeadService extends Service implements FloatingViewListener, Re
         if (frameLayout != null)
             frameLayout.removeAllViews();
 
-        x_whatsapp_screen_1 = ViewMappingDB.uberMap.get("com.ubercab.driver:id/title_Promotions").left + 50;
-        y_whatsapp_screen_1 = ViewMappingDB.uberMap.get("com.ubercab.driver:id/title_Promotions").top;
+        x_whatsapp_screen_1 = ViewMappingDB.vieWHashMap.get("com.ubercab.driver:id/title_Promotions").left + 50;
+        y_whatsapp_screen_1 = ViewMappingDB.vieWHashMap.get("com.ubercab.driver:id/title_Promotions").top;
 
         radiusOfCircle = 100;
         currentShape = "square";
-        rect = ViewMappingDB.uberMap.get("com.ubercab.driver:id/title_Promotions");
+        rect = ViewMappingDB.vieWHashMap.get("com.ubercab.driver:id/title_Promotions");
         rect.top = rect.top - 100;
 
         CustomView v = new CustomView(ChatHeadService.this);
         currentView = v;
         frameLayout.addView(v);
-        currentShape = "circle";
-
+        resetCurrentShape();
         showGif();
 
     }
@@ -1132,8 +1271,8 @@ public class ChatHeadService extends Service implements FloatingViewListener, Re
             frameLayout.removeAllViews();
         radiusOfCircle = 0;
 
-        x_whatsapp_screen_1 = ViewMappingDB.uberMap.get("com.ubercab.driver:id/title_Promotions").left + 50;
-        y_whatsapp_screen_1 = ViewMappingDB.uberMap.get("com.ubercab.driver:id/title_Promotions").top;
+        x_whatsapp_screen_1 = ViewMappingDB.vieWHashMap.get("com.ubercab.driver:id/title_Promotions").left + 50;
+        y_whatsapp_screen_1 = ViewMappingDB.vieWHashMap.get("com.ubercab.driver:id/title_Promotions").top;
 
         CustomView v = new CustomView(ChatHeadService.this);
         currentView = v;
@@ -1323,12 +1462,36 @@ public class ChatHeadService extends Service implements FloatingViewListener, Re
         TextView textView = new TextView(ChatHeadService.this);
         textView.setText(text);
         textView.setTextSize(22);
-//        textView.setX(calculatexForTextView());
-//        textView.setY(calculateYForTextView());
+
         textView.setTextColor(getResources().getColor(R.color.white));
         FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         layoutParams.gravity = Gravity.CENTER;
         textView.setLayoutParams(layoutParams);
+        textView.setPadding(20, 0, 20, 0);
+        textView.setGravity(Gravity.CENTER);
+        return textView;
+    }
+
+    TextView getTextView(String text, int position) {
+        TextView textView = new TextView(ChatHeadService.this);
+        textView.setText(text);
+        textView.setTextSize(22);
+//        textView.setX(calculatexForTextView());
+//        textView.setY(calculateYForTextView());
+        textView.setTextColor(getResources().getColor(R.color.white));
+        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        if (position == 1) {
+            layoutParams.gravity = Gravity.BOTTOM;
+        } else {
+            layoutParams.gravity = Gravity.CENTER;
+        }
+
+        textView.setLayoutParams(layoutParams);
+        if (position == 1) {
+            textView.setPadding(20, 0, 20, 20);
+        } else {
+            textView.setPadding(20, 0, 20, 0);
+        }
         textView.setGravity(Gravity.CENTER);
         return textView;
     }
@@ -1359,7 +1522,7 @@ public class ChatHeadService extends Service implements FloatingViewListener, Re
             frameLayout.removeAllViews();
 
         x_whatsapp_screen_1 = getScreenWidth() / 2;
-        y_whatsapp_screen_1 = getScreenHeight() / 2;
+        y_whatsapp_screen_1 = getScreenHeight();
         radiusOfCircle = getScreenHeight() / 17;
 
 
@@ -1367,6 +1530,8 @@ public class ChatHeadService extends Service implements FloatingViewListener, Re
         currentView = v;
         if (frameLayout != null)
             frameLayout.addView(v);
+        //showGif(getScreenWidth() / 2, getScreenHeight() - getScreenHeight() / 20);
+
 
     }
 
@@ -1407,6 +1572,7 @@ public class ChatHeadService extends Service implements FloatingViewListener, Re
 
     }
 
+
     private void createYoutubeSearchPressed() {
         if (frameLayout != null)
             frameLayout.removeAllViews();
@@ -1425,4 +1591,195 @@ public class ChatHeadService extends Service implements FloatingViewListener, Re
         if (frameLayout != null)
             addViewsToFrameLayout(v, textView);
     }
+
+    //<--------------------------------------------------- Playstore------------------------------------------------------>>
+
+
+    private void createPlaystoreAppInstallPage() {
+
+        if (frameLayout != null)
+            frameLayout.removeAllViews();
+        workFlowStarted = true;
+        x_whatsapp_screen_1 = ViewMappingDB.vieWHashMap.get("com.android.vending:id/right_button").left - getScreenWidth() / 24;
+        y_whatsapp_screen_1 = ViewMappingDB.vieWHashMap.get("com.android.vending:id/right_button").top - getScreenWidth() / 24;
+        currentShape = "square";
+        rect = ViewMappingDB.vieWHashMap.get("com.android.vending:id/right_button");
+        rect.top = rect.top - 100;
+
+
+        CustomView v = new CustomView(ChatHeadService.this);
+        currentView = v;
+
+        TextView textView = getTextView("App install krne k liye Install button dabayein");
+
+        if (frameLayout != null)
+            addViewsToFrameLayout(v, textView);
+        resetCurrentShape();
+    }
+
+    private void createPlaystoreAppInstallCompletePage() {
+
+        if (frameLayout != null)
+            frameLayout.removeAllViews();
+        workFlowStarted = true;
+        x_whatsapp_screen_1 = ViewMappingDB.vieWHashMap.get("com.android.vending:id/right_button").left - getScreenWidth() / 24;
+        y_whatsapp_screen_1 = ViewMappingDB.vieWHashMap.get("com.android.vending:id/right_button").top - getScreenWidth() / 24;
+        currentShape = "square";
+        rect = ViewMappingDB.vieWHashMap.get("com.android.vending:id/right_button");
+        rect.top = rect.top - 100;
+
+
+        CustomView v = new CustomView(ChatHeadService.this);
+        currentView = v;
+
+        TextView textView = getTextView("App open krne k liye Open button dabayein");
+
+        if (frameLayout != null)
+            addViewsToFrameLayout(v, textView);
+        resetCurrentShape();
+    }
+
+
+    private void InstallPressedPlaystoreAppInstallPage() {
+        if (frameLayout != null)
+            frameLayout.removeAllViews();
+    }
+
+    private void resetCurrentShape() {
+        currentShape = "circle";
+
+    }
+
+    //<<<<<------------------------------------------BHIM UPI------------------------------------------->>>>>>>>
+
+    private void createUPIPermissionScreen() {
+        if (frameLayout != null)
+            frameLayout.removeAllViews();
+        x_whatsapp_screen_1 = getScreenWidth() - getScreenWidth() / 4;
+        y_whatsapp_screen_1 = getScreenHeight() - getScreenWidth() / 16;
+        radiusOfCircle = getScreenWidth() / 8;
+
+        speakText("Permissions dene k liye button press karein");
+
+        CustomView v = new CustomView(ChatHeadService.this);
+        currentView = v;
+
+        TextView textView = getTextView("Permissions dene k liye button press karein");
+
+        if (frameLayout != null)
+            addViewsToFrameLayout(v, textView);
+    }
+
+    private void speakText(String s) {
+        if (ttobj != null)
+            ttobj.speak(s, TextToSpeech.QUEUE_FLUSH, null);
+    }
+
+    //<<<-------------------------------------------------PAYTM------------------------------------------------------->>>>
+    private void createPaytmAddMoneyPage() {
+        if (frameLayout != null)
+            frameLayout.removeAllViews();
+        workFlowStarted = true;
+        x_whatsapp_screen_1 = getScreenWidth() - getScreenWidth() / 5;
+        y_whatsapp_screen_1 = getScreenHeight() / 6 - getScreenWidth() / 24;
+        radiusOfCircle = getScreenWidth() / 10;
+        ttobj.speak("Add button ko touch karein", TextToSpeech.QUEUE_FLUSH, null);
+
+        CustomView v = new CustomView(ChatHeadService.this);
+        currentView = v;
+
+        TextView textView = getTextView("Add button ko touch karein");
+
+        if (frameLayout != null)
+            addViewsToFrameLayout(v, textView);
+    }
+
+    private void createPaytmAddMoneyPage2() {
+        if (frameLayout != null)
+            frameLayout.removeAllViews();
+        workFlowStarted = true;
+        x_whatsapp_screen_1 = getScreenWidth() / 2 - getScreenWidth() / 10;
+        y_whatsapp_screen_1 = getScreenHeight() / 4;
+        radiusOfCircle = getScreenWidth() / 8;
+        ttobj.speak("Aage badhne k liye touch karein", TextToSpeech.QUEUE_FLUSH, null);
+
+        CustomView v = new CustomView(ChatHeadService.this);
+        currentView = v;
+
+        TextView textView = getTextView("Add button ko touch karein");
+
+        if (frameLayout != null)
+            addViewsToFrameLayout(v, textView);
+    }
+
+    private void createPaytmEnterMoneyPage2() {
+        if (frameLayout != null)
+            frameLayout.removeAllViews();
+        //net.one97.paytm:id/amw_amount_input_et
+//        Intent intent1 = new Intent(ChatHeadService.this, DialogActivity.class);
+//        intent1.setFlags(FLAG_ACTIVITY_NEW_TASK);
+//        startActivity(intent1);
+        x_whatsapp_screen_1 = getScreenWidth() / 3 - getScreenWidth() / 10;
+        y_whatsapp_screen_1 = getScreenHeight() / 3;
+        radiusOfCircle = getScreenWidth() / 8;
+        ttobj.speak("Amount dalne k liye yahan touch karein", TextToSpeech.QUEUE_FLUSH, null);
+
+        CustomView v = new CustomView(ChatHeadService.this);
+        currentView = v;
+
+        TextView textView = getTextView("Amount dalne k liye yahan touch karein");
+
+        if (frameLayout != null)
+            addViewsToFrameLayout(v, textView);
+    }
+
+
+    private void createPaytmEnterMoneyPage3() {
+        if (frameLayout != null)
+            frameLayout.removeAllViews();
+    }
+
+    private void createPaytmEnterMoneyPage4() {
+        if (frameLayout != null)
+            frameLayout.removeAllViews();
+        int left = ViewMappingDB.vieWHashMap.get("net.one97.paytm:id/txtDebitCreditCard") == null ? getScreenWidth() / 4 : ViewMappingDB.vieWHashMap.get("net.one97.paytm:id/txtDebitCreditCard").left;
+        int top = ViewMappingDB.vieWHashMap.get("net.one97.paytm:id/txtDebitCreditCard") == null ? getScreenHeight() / 2 : ViewMappingDB.vieWHashMap.get("net.one97.paytm:id/txtDebitCreditCard").top - getScreenHeight() / 12;
+
+        x_whatsapp_screen_1 = left - getScreenWidth() / 24;
+        y_whatsapp_screen_1 = top - getScreenWidth() / 20;
+
+        radiusOfCircle = getScreenWidth() / 8;
+        ttobj.speak("Agar aap ATM card se payment karna chahte hain to card add karne k liye 'Debit' ko touch karein", TextToSpeech.QUEUE_FLUSH, null);
+
+        CustomView v = new CustomView(ChatHeadService.this);
+        currentView = v;
+
+        TextView textView = getTextView("Agar aap ATM card se payment karna chahte hain to card add karne k liye 'Debit' ko touch karein", 1);
+
+        if (frameLayout != null)
+            addViewsToFrameLayout(v, textView);
+    }
+
+    private void createPaytmEnterMoneyPageAddDebitCard() {
+        if (frameLayout != null)
+            frameLayout.removeAllViews();
+        //net.one97.paytm:id/tv_enter_card_number
+        int left = ViewMappingDB.vieWHashMap.get("net.one97.paytm:id/tv_enter_card_number") == null ? getScreenWidth() / 3 : ViewMappingDB.vieWHashMap.get("net.one97.paytm:id/tv_enter_card_number").left + getScreenWidth() / 10;
+        int top = ViewMappingDB.vieWHashMap.get("net.one97.paytm:id/tv_enter_card_number") == null ? getScreenHeight() / 2 : ViewMappingDB.vieWHashMap.get("net.one97.paytm:id/tv_enter_card_number").top - getScreenHeight() / 12;
+
+        x_whatsapp_screen_1 = left - getScreenWidth() / 24;
+        y_whatsapp_screen_1 = top;
+
+        radiusOfCircle = getScreenWidth() / 8;
+        ttobj.speak("Card number dalne k liye yahan touch karein", TextToSpeech.QUEUE_FLUSH, null);
+
+        CustomView v = new CustomView(ChatHeadService.this);
+        currentView = v;
+
+        TextView textView = getTextView("Card number dalne k liye yahan touch karein");
+
+        if (frameLayout != null)
+            addViewsToFrameLayout(v, textView);
+    }
+
 }

@@ -8,6 +8,11 @@ import android.speech.RecognizerIntent;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.helperapp.utils.Constants;
+import com.example.helperapp.utils.NotifyEvents;
+
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -50,7 +55,13 @@ public class DialogActivity extends Activity {
                     ArrayList<String> result = data
                             .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
                     Log.e("text", result.get(0));
-                    //txtSpeechInput.setText(result.get(0));
+
+                    NotifyEvents notifyEvents = new NotifyEvents(Constants.VOICEINPUTCOMPLETE);
+                    notifyEvents.setExtraData(result.get(0));
+
+                    EventBus.getDefault().post(notifyEvents);
+
+                    finish();
                 }
                 break;
             }

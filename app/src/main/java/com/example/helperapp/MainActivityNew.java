@@ -15,6 +15,7 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.Settings;
 import android.speech.RecognizerIntent;
 import android.util.DisplayMetrics;
@@ -41,6 +42,8 @@ import com.example.helperapp.service.ChatHeadService;
 import com.example.helperapp.service.CustomFloatingViewService;
 import com.example.helperapp.service.MyAccessibilityService;
 import com.example.helperapp.utils.AppHelper;
+import com.example.helperapp.utils.Constants;
+import com.example.helperapp.utils.NotifyEvents;
 import com.example.helperapp.utils.SharedPrefUtil;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -49,6 +52,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 
+import org.greenrobot.eventbus.EventBus;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -89,7 +93,6 @@ public class MainActivityNew extends AppCompatActivity {
             public void onClick(View v) {
 
 
-
                 boolean enabled = isAccessibilityServiceEnabled(MainActivityNew.this, MyAccessibilityService.class);
                 if (!enabled) {
                     Intent intent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
@@ -99,12 +102,20 @@ public class MainActivityNew extends AppCompatActivity {
                     return;
                 }
 
-                Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.google.android.apps.maps");
+//                final String appPackageName = "in.org.npci.upiapp"; // getPackageName() from Context or Activity object
+//                try {
+//                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)));
+//                } catch (android.content.ActivityNotFoundException anfe) {
+//                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
+//                }
+
+
+                Intent launchIntent = getPackageManager().getLaunchIntentForPackage("net.one97.paytm");
                 if (launchIntent != null) {
                     startActivity(launchIntent);//null pointer check in case package name was not found
                 }
-                showFloatingView(MainActivityNew.this, true, false);
-
+                showFloatingView(MainActivityNew.this, true, false, true);
+                finish();
 
             }
         });
@@ -315,14 +326,14 @@ public class MainActivityNew extends AppCompatActivity {
 
     }
 
-    private void showFloatingView(Context context, boolean isShowOverlayPermission, boolean isCustomFloatingView) {
+    private void showFloatingView(Context context, boolean isShowOverlayPermission, boolean isCustomFloatingView, boolean withWorkflow) {
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
-            startFloatingViewService(MainActivityNew.this, isCustomFloatingView);
+            startFloatingViewService(MainActivityNew.this, isCustomFloatingView, withWorkflow);
             return;
         }
 
         if (Settings.canDrawOverlays(context)) {
-            startFloatingViewService(MainActivityNew.this, isCustomFloatingView);
+            startFloatingViewService(MainActivityNew.this, isCustomFloatingView, withWorkflow);
             return;
         }
 
@@ -333,7 +344,7 @@ public class MainActivityNew extends AppCompatActivity {
     }
 
 
-    private static void startFloatingViewService(Activity activity, boolean isCustomFloatingView) {
+    private static void startFloatingViewService(Activity activity, boolean isCustomFloatingView, boolean withWorkflow) {
         // *** You must follow these rules when obtain the cutout(FloatingViewManager.findCutoutSafeArea) ***
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             // 1. 'windowLayoutInDisplayCutoutMode' do not be set to 'never'
@@ -360,14 +371,15 @@ public class MainActivityNew extends AppCompatActivity {
         intent.putExtra(key, FloatingViewManager.findCutoutSafeArea(activity));
         ContextCompat.startForegroundService(activity, intent);
 
-        // this code starts workflow as soon as you launch google app from our app
-//        new Handler().postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//                EventBus.getDefault().post(new NotifyEvents(Constants.STARTWORKFLOW));
-//
-//            }
-//        }, 2000);
+        //this code starts workflow as soon as you launch google app from our app
+        if (withWorkflow)
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    EventBus.getDefault().post(new NotifyEvents(Constants.STARTWORKFLOW));
+
+                }
+            }, 2000);
     }
 
     @Override
@@ -388,7 +400,7 @@ public class MainActivityNew extends AppCompatActivity {
         }
 
         if (isAccessibilityServiceEnabled(MainActivityNew.this, MyAccessibilityService.class)) {
-            showFloatingView(MainActivityNew.this, true, false);
+            showFloatingView(MainActivityNew.this, true, false, false);
         }
 
     }
